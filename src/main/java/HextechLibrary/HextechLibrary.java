@@ -12,6 +12,9 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -232,10 +235,29 @@ public class HextechLibrary{
      */
     public String[] GetMatchList(String puuid, int matchCount) throws JsonProcessingException {
         String responseJSON = "";
+        LocalDateTime localDateTime = LocalDateTime.now().minusDays(10);
+        ZoneId zone = ZoneId.systemDefault();
+        ZoneOffset zoneOffSet = zone.getRules().getOffset(localDateTime);
+        //Headers
+        String gameType = "normal";
+        long startTime = localDateTime.toEpochSecond(zoneOffSet),endTime = 0;
+        int queue = 0, start = 0, count = 100;
+
+        if (matchCount == 0){
+            count = matchCount;
+        }
+
+        //"&queue=" + queue +
+        //"&start=" + start +
+        String head =
+                "ids?startTime=" + startTime +
+                        "&endTime=" + endTime +
+                        "&type=" + gameType +
+                        "&count=" + count;
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", RIOT_API_TOKEN)
-                .url( URLBASE + "match/v5/matches/by-puuid/" + puuid + "/ids?start=0&count=" + matchCount)
+                .url( URLBASE + "match/v5/matches/by-puuid/" + puuid + "/" + head)
                 .build();
 
         try (Response response = client.newCall(request).execute()){

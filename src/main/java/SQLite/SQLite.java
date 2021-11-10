@@ -20,7 +20,7 @@ https://howtodoinjava.com/design-patterns/creational/builder-pattern-in-java/
  */
 public class SQLite {
 
-    String database = "jdbc:sqlite:H:/Projects/SQLite/HexDB/Riot_API_DB.db";
+    String database = "jdbc:sqlite:D:/Projects/SQLite/HexDB/Riot_API_DB.db";
     
     
     /**
@@ -457,17 +457,6 @@ public class SQLite {
                     "Wins: " +  "\t" + wins + "\t" +
                             "Loses: " +  "\t" + loses
             );
-            // create  instance object
-            Instant endTime = Instant.now();
-            Instant startTime = endTime.minus();
-
-            // print Instant Value
-            System.out.println("Instant: " + endTime);
-            // get epochValue using getEpochSecond
-            long epochValue = endTime.getEpochSecond();
-            // print results
-            System.out.println("Java epoch Value: " + epochValue);
-
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());

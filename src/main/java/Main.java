@@ -2,8 +2,9 @@ import HextechLibrary.HextechLibrary;
 import SQLite.SQLite;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import java.sql.Date;
 import java.sql.SQLException;
-import java.time.Instant;
+import java.time.*;
 
 public class Main {
     /*
@@ -26,7 +27,30 @@ public class Main {
 
         //System.out.println(hextechLibrary.GetSummoner("Dnicky").getName());
         //hextechLibrary.AddSummoner("JackWildBurn");
-        lite.GetMatches("OOYMjHMykymUP4Cag57ph-_JZ_rKDM7WZwRgc_dpazJpBv45Z45be9CB1PvxIgC2_Y1mvLe-zrcFhw", "CLASSIC");
-        //hextechLibrary.GetMatchList("OOYMjHMykymUP4Cag57ph-_JZ_rKDM7WZwRgc_dpazJpBv45Z45be9CB1PvxIgC2_Y1mvLe-zrcFhw",20);
+        //lite.GetMatches("OOYMjHMykymUP4Cag57ph-_JZ_rKDM7WZwRgc_dpazJpBv45Z45be9CB1PvxIgC2_Y1mvLe-zrcFhw", "CLASSIC");
+        hextechLibrary.GetMatchList("OOYMjHMykymUP4Cag57ph-_JZ_rKDM7WZwRgc_dpazJpBv45Z45be9CB1PvxIgC2_Y1mvLe-zrcFhw",20);
+
+        /*
+        // create  instance object
+        LocalDateTime Today = LocalDateTime.now();
+        LocalDateTime yesterday = Today.minusDays(10);
+
+        LocalDateTime now = LocalDateTime.now();
+        ZoneId zone = ZoneId.systemDefault();
+        ZoneOffset zoneOffSet = zone.getRules().getOffset(yesterday);
+
+        System.out.println("Oie: " + yesterday.toEpochSecond(zoneOffSet));
+
+        Instant instant = Instant.now();
+        //Instant startTime = endTime.minus();
+
+        // print Instant Value
+        System.out.println("Instant: " + instant);
+        // get epochValue using getEpochSecond
+        long epochValue = instant.getEpochSecond();
+        // print results
+        System.out.println("Java epoch Value: " + epochValue);
+        */
     }
+
 }
