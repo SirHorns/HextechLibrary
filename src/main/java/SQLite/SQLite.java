@@ -20,7 +20,8 @@ https://howtodoinjava.com/design-patterns/creational/builder-pattern-in-java/
  */
 public class SQLite {
 
-    String database = "jdbc:sqlite:D:/Projects/SQLite/HexDB/Riot_API_DB.db";
+    String dir = "D:/Projects/SQLite/HexDB/Riot_API_DB.db";
+    String database = "jdbc:sqlite:" + dir;
     
     
     /**
@@ -29,25 +30,25 @@ public class SQLite {
      * @param fileName the database file name
      */
     public void createNewDatabase(String fileName) {
-
-
         try (Connection conn = DriverManager.getConnection(database)) {
-            File tempFile = new File("c:/temp/temp.txt");
+            File tempFile = new File(dir);
             boolean exists = tempFile.exists();
 
             if (conn != null) {
                 DatabaseMetaData meta = conn.getMetaData();
-                System.out.println("The driver name is " + meta.getDriverName());
-                System.out.println("A new database has been created.");
+                //System.out.println("The driver name is " + meta.getDriverName());
+                if (exists){
+                    System.out.println("A database already exists.");
+                }else {
+                    System.out.println("A new database has been created.");
+                }
             }
-
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
     public void createNewTable() {
-
         // SQL statement for creating a new table
         String sql = "CREATE TABLE IF NOT EXISTS summoners(" +
                 "accountId text PRIMARY KEY," +
@@ -101,7 +102,6 @@ public class SQLite {
     }
 
     public void CreateNewPlayerTable(String username) {
-
         // SQL statement for creating a new table
         String playerMatchInfoTable =
                 "CREATE TABLE IF NOT EXISTS " + username + "MatchInfo(" +

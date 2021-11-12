@@ -1,5 +1,6 @@
 import HextechLibrary.HextechLibrary;
 import SQLite.SQLite;
+import Types.dto.Summoner.Summoner;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.sql.Date;
@@ -26,9 +27,16 @@ public class Main {
         hextechLibrary.setRIOT_API_TOKEN("RGAPI-dbd6d858-570a-4103-a22f-76c94c370609");
 
         //System.out.println(hextechLibrary.GetSummoner("Dnicky").getName());
-        //hextechLibrary.AddSummoner("JackWildBurn");
+        hextechLibrary.AddSummoner("Dnikcy");
+
+        Summoner summoner = hextechLibrary.GetSummoner("Dnikcy");
         //lite.GetMatches("OOYMjHMykymUP4Cag57ph-_JZ_rKDM7WZwRgc_dpazJpBv45Z45be9CB1PvxIgC2_Y1mvLe-zrcFhw", "CLASSIC");
-        hextechLibrary.GetMatchList("OOYMjHMykymUP4Cag57ph-_JZ_rKDM7WZwRgc_dpazJpBv45Z45be9CB1PvxIgC2_Y1mvLe-zrcFhw",20);
+        if (summoner != null){
+            hextechLibrary.GetMatchList(summoner.getPuuid(), "normal",20);
+        }else{
+            System.out.println("Null Summoner Object returned from Hextech Library.");
+        }
+
 
         /*
         // create  instance object

@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Optional;
 
 public class HextechLibrary{
     private String RIOT_API_TOKEN;
@@ -38,24 +39,16 @@ public class HextechLibrary{
     }
 
     public Summoner GetSummoner(String username){
-        Summoner summoner = new Summoner.Builder()
-                .withName("INIT_name")
-                .withId("INIT_id")
-                .withPuuid("INIT_puuid")
-                .withAccountId("INIT_accountId")
-                .withProfileIconId(1)
-                .withRevisionDate(1)
-                .withSummonerLevel(1)
-                .build();
+        Summoner summoner;
         if (lite.SummonerExist(username)){
             System.out.println(username + " is in the DB.");
             summoner = lite.getSummoner(username);
-
+            return summoner;
         }
         else{
-            System.out.println("Summoner not in the DB. Returning INIT_Object");
+            System.out.println(username + " is not in the DB. Returning null.");
+            return null;
         }
-        return summoner;
     }
 
     public void temp(){
@@ -128,15 +121,7 @@ public class HextechLibrary{
         Get 20 matches
         Store that info
         */
-        Summoner summoner = new Summoner.Builder()
-                .withName("INIT_name")
-                .withId("INIT_id")
-                .withPuuid("INIT_puuid")
-                .withAccountId("INIT_accountId")
-                .withProfileIconId(1)
-                .withRevisionDate(1)
-                .withSummonerLevel(1)
-                .build();
+        Summoner summoner;
         String responseJSON = "";
         String[] matchesIdList;
 
@@ -233,13 +218,13 @@ public class HextechLibrary{
      * @param matchCount Number of matches to pull
      * @return the list of match Ids from the player's match history
      */
-    public String[] GetMatchList(String puuid, int matchCount) throws JsonProcessingException {
+    public String[] GetMatchList(String puuid, String gameType, int matchCount) throws JsonProcessingException {
         String responseJSON = "";
-        LocalDateTime localDateTime = LocalDateTime.now().minusDays(10);
+        LocalDateTime localDateTime = LocalDateTime.now().minusDays(14);
         ZoneId zone = ZoneId.systemDefault();
         ZoneOffset zoneOffSet = zone.getRules().getOffset(localDateTime);
+
         //Headers
-        String gameType = "normal";
         long startTime = localDateTime.toEpochSecond(zoneOffSet),endTime = 0;
         int queue = 0, start = 0, count = 100;
 
