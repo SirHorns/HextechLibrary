@@ -1,11 +1,13 @@
-import HextechLibrary.HextechLibrary;
-import SQLite.SQLite;
-import Types.dto.Summoner.Summoner;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
-import java.sql.Date;
-import java.sql.SQLException;
-import java.time.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import hextechlibrary.HextechLibrary;
+import hextechlibrary.games.tft.dto.match.MatchTFT;
+import hextechlibrary.games.tft.dto.match.ParticipantTFT;
+import hextechlibrary.games.tft.dto.match.Unit;
+import hextechlibrary.games.tft.objects.ParticipantsTFT;
+
+import java.util.List;
+
 
 public class Main {
     /*
@@ -18,25 +20,33 @@ public class Main {
     }
     * */
 
-    public static void main(String[] args) throws SQLException, JsonProcessingException {
-        SQLite lite = new SQLite();
-        lite.createNewDatabase("Riot_API_DB");
-        lite.createNewTable();
+    public static void main(String[] args) throws JsonProcessingException {
+        HextechLibrary hextechLibrary = new HextechLibrary("RGAPI-dbd6d858-570a-4103-a22f-76c94c370609");
+        String puuid = hextechLibrary.getRapiManager().getSummonerTFTByName("JackWildBurn").getPuuid();
+        System.out.println(puuid);
 
-        HextechLibrary hextechLibrary = new HextechLibrary();
-        hextechLibrary.setRIOT_API_TOKEN("RGAPI-dbd6d858-570a-4103-a22f-76c94c370609");
+        List<String> matchIds = hextechLibrary.getRapiManager().getTFTMatchesByPUUID(puuid,1);
+        String matchId = matchIds.get(0);
+        System.out.println(matchId);
 
-        //System.out.println(hextechLibrary.GetSummoner("Dnicky").getName());
-        hextechLibrary.AddSummoner("Dnikcy");
+        MatchTFT matchTFT = hextechLibrary.getRapiManager().getTFTMatchByMatchID(matchId);
+        ParticipantsTFT participantTFT = new ParticipantsTFT(matchTFT.getInfo().getParticipants());
+        ParticipantTFT matchParticipant = participantTFT.getParticipantByPUUID(puuid);
 
-        Summoner summoner = hextechLibrary.GetSummoner("Dnikcy");
-        //lite.GetMatches("OOYMjHMykymUP4Cag57ph-_JZ_rKDM7WZwRgc_dpazJpBv45Z45be9CB1PvxIgC2_Y1mvLe-zrcFhw", "CLASSIC");
-        if (summoner != null){
-            hextechLibrary.GetMatchList(summoner.getPuuid(), "normal",20);
-        }else{
-            System.out.println("Null Summoner Object returned from Hextech Library.");
+        StringBuilder line = new  StringBuilder();
+        for (Unit unit: matchParticipant.getUnits()) {
+            line
+                    .append("Unit: ")
+                    .append(unit.getTier())
+                    .append("\n")
+                    .append("Items: ");
+            for (int item: unit.getItems()) {
+                line.append(item)
+                        .append(" ");
+            }
+            line.append("\n");
         }
-
+        System.out.println(line);
 
         /*
         // create  instance object
