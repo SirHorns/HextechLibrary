@@ -24,7 +24,7 @@ public class RAPIManager{
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
     String LOL_API_KEY;
-    String DEVELOPMENT_API_TOKEN = "RGAPI-50de00ee-952a-4087-9f8a-c9ff6f587fe2";
+    String DEVELOPMENT_API_TOKEN = "RGAPI-6f20e16a-6467-4c7c-af17-d683d6ed9be7";
 
     public RAPIManager(String lol_api_key) {
         LOL_API_KEY = lol_api_key;

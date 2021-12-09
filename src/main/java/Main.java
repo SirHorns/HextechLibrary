@@ -5,6 +5,7 @@ import hextechlibrary.games.tft.dto.match.MatchTFT;
 import hextechlibrary.games.tft.dto.match.ParticipantTFT;
 import hextechlibrary.games.tft.dto.match.Unit;
 import hextechlibrary.games.tft.objects.ParticipantsTFT;
+import hextechlibrary.games.tft.sets.five.SetFiveManager;
 
 import java.util.List;
 
@@ -32,16 +33,17 @@ public class Main {
         MatchTFT matchTFT = hextechLibrary.getRapiManager().getTFTMatchByMatchID(matchId);
         ParticipantsTFT participantTFT = new ParticipantsTFT(matchTFT.getInfo().getParticipants());
         ParticipantTFT matchParticipant = participantTFT.getParticipantByPUUID(puuid);
+        SetFiveManager setFiveManager = new SetFiveManager();;
 
         StringBuilder line = new  StringBuilder();
         for (Unit unit: matchParticipant.getUnits()) {
             line
                     .append("Unit: ")
-                    .append(unit.getTier())
+                    .append(unit.getCharacterId())
                     .append("\n")
                     .append("Items: ");
             for (int item: unit.getItems()) {
-                line.append(item)
+                line.append(setFiveManager.getItemByID(item).getName())
                         .append(" ");
             }
             line.append("\n");
