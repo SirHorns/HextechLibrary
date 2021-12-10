@@ -1,29 +1,35 @@
 package hextechlibrary;
 
+import hextechlibrary.games.TFTManager;
 import hextechlibrary.riotapi.RAPIManager;
 
 
 public class HextechLibrary{
     private static HextechLibrary INSTANCE;
-    private String LOL_API_KEY;
+    private final String lolKey;
+    private final String tftKey;
+    private final String lorKey;
+    private final TFTManager tftManager;
 
     RAPIManager rapiManager;
 
     public HextechLibrary(String lol_api_key) {
-        this.LOL_API_KEY = lol_api_key;
-        this.rapiManager = new RAPIManager(LOL_API_KEY);
+        this.lolKey = lol_api_key;
+        this.lorKey = "LoR-KEY";
+        this.tftKey = "TFT-KEY";
+        this.rapiManager = new RAPIManager(lolKey);
+        this.tftManager = new TFTManager();
     }
 
-    public String getLOL_API_KEY() {
-        return LOL_API_KEY;
-    }
-
-    public void setLOL_API_KEY(String LOL_API_KEY) {
-        this.LOL_API_KEY = LOL_API_KEY;
-        rapiManager = new RAPIManager(LOL_API_KEY);
+    public String getLolKey() {
+        return lolKey;
     }
 
     public RAPIManager getRapiManager() {
         return rapiManager;
+    }
+
+    public TFTManager getTftManager() {
+        return tftManager;
     }
 }

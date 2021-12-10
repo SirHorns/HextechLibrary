@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-//Handles all the actuall RIOT API calls and passes off output to the DB functions.
+//Handles all the actual RIOT API calls and passes off output to the DB functions.
 public class RAPIManager{
 
     private final OkHttpClient client = new OkHttpClient();
@@ -28,6 +28,10 @@ public class RAPIManager{
 
     public RAPIManager(String lol_api_key) {
         LOL_API_KEY = lol_api_key;
+    }
+
+    public void setDEVELOPMENT_API_TOKEN(String DEVELOPMENT_API_TOKEN) {
+        this.DEVELOPMENT_API_TOKEN = DEVELOPMENT_API_TOKEN;
     }
 
     //LoL MATCH INFO
