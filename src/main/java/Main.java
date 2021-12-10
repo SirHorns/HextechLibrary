@@ -38,15 +38,21 @@ public class Main {
         StringBuilder line = new  StringBuilder();
         for (Unit unit: matchParticipant.getUnits()) {
             line
-                    .append("Unit: ")
+                    .append("\nName: ")
+                    .append(unit.getName())
+                    .append("\nCharacterID:")
                     .append(unit.getCharacterId())
+                    .append("\nTier:")
+                    .append(unit.getTier())
+                    .append("\nRarity:")
+                    .append(unit.getRarity())
                     .append("\n")
                     .append("Items: ");
             for (int item: unit.getItems()) {
                 line.append(setFiveManager.getItemByID(item).getName())
-                        .append(" ");
+                        .append(", ");
             }
-            line.append("\n");
+            line.append("\n=====");
         }
         System.out.println(line);
 

@@ -4,6 +4,7 @@ package hextechlibrary.games.tft.dto.match;
 import java.util.List;
 import javax.annotation.processing.Generated;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 public class ParticipantTFT {
 
     @JsonProperty("companion")
-    private final CompanionTFT companionTFT;
+    private final hextechlibrary.games.tft.dto.match.CompanionTFT companionTFT;
     @JsonProperty("gold_left")
     private final int goldLeft;
     @JsonProperty("last_round")
@@ -110,6 +111,7 @@ public class ParticipantTFT {
         return units;
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonPOJOBuilder
     public static class Builder{
 
