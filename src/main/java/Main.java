@@ -12,9 +12,24 @@ import hextechlibrary.games.tft.sets.five.patch1115.Champion;
 import hextechlibrary.games.tft.sets.five.patch1115.Trait;
 import hextechlibrary.riotapi.RAPIManager;
 
+import java.io.File;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 
 public class Main {
@@ -32,6 +47,23 @@ public class Main {
         //JavaGUI();
         //HTL();
         //setFive();
+        String lol = "RGAPI-dbd6d858-570a-4103-a22f-76c94c370609";
+        String tft = "RGAPI-1b7223f5-88e8-4dfa-b9b3-6f4445984691";
+
+        HextechLibrary hextechLibrary = new HextechLibrary(lol,tft);
+        RAPIManager rapiManager = matchTable(hextechLibrary.getRapiManager();
+
+
+        try {
+            rapiManager.getTFTMatchByMatchID(
+                    rapiManager.getTFTMatchesByPUUID(
+                            rapiManager.getSummonerTFTByName("JackWildBurn").getPuuid(), 1)
+                            .get(0)
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private static void JavaGUI(){
@@ -79,8 +111,8 @@ public class Main {
 
         HextechLibrary hextechLibrary = new HextechLibrary(lol,tft);
         TFTManager tftManager = hextechLibrary.getTftManager();
-        setInfo(tftManager);
-        //randomIinfo(tftManager);
+        //setInfo(tftManager);
+        randomIinfo(tftManager);
     }
 
     private static void setInfo(TFTManager tftManager){
@@ -125,6 +157,88 @@ public class Main {
                     .append("\n");
         }
         System.out.println(string);
+    }
+
+    public static void matchTable(MatchTFT matchTFT) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet(matchTFT.getMetadata().getMatch_id());
+        Row header = sheet.createRow(0);
+        Cell headerCell = header.createCell(0);
+        headerCell.setCellValue("Players:");
+        headerCell = header.createCell(1);
+        headerCell.setCellValue("PUUID:");
+
+        int index = 0;
+        int rownum = 1;
+        for (ParticipantTFT par:matchTFT.getInfo().getParticipants()) {
+            Row row = sheet.createRow(rownum);
+            Cell cell = row.createCell(0);
+            cell.setCellValue("Joe");
+
+            cell = row.createCell(1);
+            cell.setCellValue(par.getPuuid());
+            rownum++;
+        }
+
+        File currDir = new File(".");
+        String path = currDir.getAbsolutePath();
+        String fileLocation = path.substring(0, path.length() - 1) + "C:/Users/mgt_bsthomas4/Documents/sheet.xlsx";
+
+        FileOutputStream outputStream = new FileOutputStream(fileLocation);
+        workbook.write(outputStream);
+        workbook.close();
+
+    }
+
+    public static void createExel(){
+        // workbook object
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        // spreadsheet object
+        XSSFSheet spreadsheet = workbook.createSheet(" Student Data ");
+        // creating a row object
+        XSSFRow row;
+        // This data needs to be written (Object[])
+        Map<String, Object[]> studentData = new TreeMap<String, Object[]>();
+
+        studentData.put("1", new Object[] { "Roll No", "NAME", "Year" });
+        studentData.put("2", new Object[] { "128", "Aditya", "2nd year" });
+        studentData.put("3", new Object[] { "129", "Narayana", "2nd year" });
+        studentData.put("4", new Object[] { "130", "Mohan", "2nd year" });
+        studentData.put("5", new Object[] { "131", "Radha", "2nd year" });
+        studentData.put("6", new Object[] { "132", "Gopal", "2nd year" });
+
+        Set<String> keyid = studentData.keySet();
+        int rowid = 0;
+
+        // writing the data into the sheets...
+        for (String key : keyid) {
+            row = spreadsheet.createRow(rowid++);
+            Object[] objectArr = studentData.get(key);
+            int cellid = 0;
+
+            for (Object obj : objectArr) {
+                Cell cell = row.createCell(cellid++);
+                cell.setCellValue((String)obj);
+            }
+        }
+
+        // .xlsx is the format for Excel Sheets...
+        // writing the workbook into the file...
+        FileOutputStream out = null;
+        try {
+            out = new FileOutputStream(new File("C:/Users/mgt_bsthomas4/Documents/GFGsheet.xlsx"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            workbook.write(out);
+            if (out != null) {
+                out.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void HTL(){
