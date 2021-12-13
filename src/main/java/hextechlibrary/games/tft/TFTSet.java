@@ -22,10 +22,12 @@ public abstract class TFTSet {
      * @param itemsJSON TFT Set Items JSON String
      * @param traitsJSON TFT Set Traits JSON String
      */
-    public TFTSet(String championsJSON,String itemsJSON,String traitsJSON) {
+    public TFTSet(String championsJSON,String itemsJSON,String traitsJSON, int set, int patch) {
         this.champions = setChampions(championsJSON);
         this.items = setItems(itemsJSON);
         this.traits = setTraits(traitsJSON);
+        this.set = set;
+        this.patch = patch;
     }
 
     /**
@@ -76,31 +78,88 @@ public abstract class TFTSet {
         return traits;
     }
 
-    public void setSet(int set) {
-        this.set = set;
-    }
-
-    public void setPatch(int patch) {
-        this.patch = patch;
-    }
-
-    public List<Champion> getChampions() {
-        return champions;
-    }
-
-    public List<Item> getItems() {
-        return items;
-    }
-
-    public List<Trait> getTraits() {
-        return traits;
-    }
-
+    /**
+     * Returns the TFT Set Number
+     *
+     * @return tft set number
+     */
     public int getSet() {
         return set;
     }
 
+    /**
+     * Returns the TFT Patch Number
+     * @return tft patch number
+     */
     public int getPatch() {
         return patch;
+    }
+
+    /**
+     * Returns an item object based on the id
+     * @param id tft item id
+     * @return tft item object
+     */
+    public Item getItemByID(int id) {
+        for(Item item : getItems()){
+            if(item.getId() == id){
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns a champion object based on the champion id
+     * @param id tft champion id
+     * @return tft champion object
+     */
+    public Champion getChampionByID(String id) {
+        for(Champion champion : this.champions){
+            if(champion.getId().equals(id)){
+                return champion;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a champion object based on the champion name
+     * @param name tft champion name
+     * @return tft champion object
+     */
+    public Champion getChampionByName(String name) {
+        for(Champion champion : this.champions){
+            if(champion.getName().equals(name)){
+                return champion;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a champion object based on the champion name
+     * @return List of tft champion objects
+     */
+    public List<Champion> getChampions() {
+        return this.champions;
+    }
+
+    /**
+     * Returns a champion object based on the champion name
+     * @return List of tft item objects
+     */
+    public List<Item> getItems() {
+        return this.items;
+    }
+
+    /**
+     * Returns a champion object based on the champion name
+     * @return List of tft trait objects
+     */
+    public List<Trait> getTraits() {
+        return this.traits;
     }
 }

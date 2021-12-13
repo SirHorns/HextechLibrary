@@ -1,20 +1,17 @@
 package hextechlibrary.riotapi;
 
+import hextechlibrary.games.TFTManager;
 import hextechlibrary.games.leagueoflegends.dto.match.Match;
 import hextechlibrary.games.leagueoflegends.dto.summoner.Summoner;
 import hextechlibrary.games.tft.dto.SummonerTFT;
 import hextechlibrary.games.tft.dto.match.MatchTFT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hextechlibrary.games.tft.dto.match.MatchesTFT;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,15 +20,47 @@ public class RAPIManager{
 
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    String LOL_API_KEY;
-    String DEVELOPMENT_API_TOKEN = "RGAPI-6f20e16a-6467-4c7c-af17-d683d6ed9be7";
+    String LOL_KEY;
+    String LOR_KEY;
+    String TFT_KEY;
+    TFTManager tftManager;
 
-    public RAPIManager(String lol_api_key) {
-        LOL_API_KEY = lol_api_key;
+    public RAPIManager(String lolkey, String lorkey, String tftkey) {
+        this.LOL_KEY = lolkey;
+        this.LOR_KEY = lorkey;
+        this.TFT_KEY = tftkey;
     }
 
-    public void setDEVELOPMENT_API_TOKEN(String DEVELOPMENT_API_TOKEN) {
-        this.DEVELOPMENT_API_TOKEN = DEVELOPMENT_API_TOKEN;
+    /**
+     * /
+     * @param tft_key Team Fight Tactics API Key
+     */
+    public void setTFT_KEY(String tft_key) {
+        this.TFT_KEY = tft_key;
+    }
+
+    /**
+     * /
+     * @return  League of Legends API Key
+     */
+    public String getLOL_KEY() {
+        return LOL_KEY;
+    }
+
+    /**
+     *
+     * @param LOL_KEY League of Legends API Key
+     */
+    public void setLOL_KEY(String LOL_KEY) {
+        this.LOL_KEY = LOL_KEY;
+    }
+
+    /**
+     *
+     * @return Team Fight Tactics API Key
+     */
+    public String getTFT_KEY() {
+        return TFT_KEY;
     }
 
     //LoL MATCH INFO
@@ -53,7 +82,7 @@ public class RAPIManager{
         //String args = "/ids?start=" + startTime + "&end=" + endTime + "&queue=" + queue + "&type=" + type + "&start=" + start + "&count=" + count;
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_API_KEY)
+                .header("X-Riot-Token", LOL_KEY)
                 .url("https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuid)
                 .build();
 
@@ -76,7 +105,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_API_KEY)
+                .header("X-Riot-Token", LOL_KEY)
                 .url("https://americas.api.riotgames.com/lol/match/v5/matches/" + matchId)
                 .build();
 
@@ -99,7 +128,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_API_KEY)
+                .header("X-Riot-Token", LOL_KEY)
                 .url("https://americas.api.riotgames.com/lol/match/v5/matches/" + matchId + "/timeline")
                 .build();
 
@@ -126,7 +155,7 @@ public class RAPIManager{
         String args = "/ids?count=" + count;
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", DEVELOPMENT_API_TOKEN)
+                .header("X-Riot-Token", TFT_KEY)
                 .url("https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/" + puuid + args)
                 .build();
 
@@ -149,7 +178,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", DEVELOPMENT_API_TOKEN)
+                .header("X-Riot-Token", TFT_KEY)
                 .url("https://americas.api.riotgames.com/tft/match/v1/matches/" + matchId)
                 .build();
 
@@ -174,7 +203,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_API_KEY)
+                .header("X-Riot-Token", LOL_KEY)
                 .url("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-account/" + accountID)
                 .build();
 
@@ -197,7 +226,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_API_KEY)
+                .header("X-Riot-Token", LOL_KEY)
                 .url("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + name)
                 .build();
 
@@ -220,7 +249,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_API_KEY)
+                .header("X-Riot-Token", LOL_KEY)
                 .url("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/" + puuid)
                 .build();
 
@@ -243,7 +272,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_API_KEY)
+                .header("X-Riot-Token", LOL_KEY)
                 .url("https://https://na1.api.riotgames.com/lol/summoner/v4/summoners/" + summonerID)
                 .build();
 
@@ -268,7 +297,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", DEVELOPMENT_API_TOKEN)
+                .header("X-Riot-Token", TFT_KEY)
                 .url("https://na1.api.riotgames.com/tft/summoner/v1/summoners/by-name/" + name)
                 .build();
 
@@ -291,7 +320,7 @@ public class RAPIManager{
         String responseJSON = "";
 
         Request request = new Request.Builder()
-                .header("X-Riot-Token", DEVELOPMENT_API_TOKEN)
+                .header("X-Riot-Token", TFT_KEY)
                 .url("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/" + puuid)
                 .build();
 
