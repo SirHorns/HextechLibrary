@@ -3,6 +3,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import hextechlibrary.HextechLibrary;
 import hextechlibrary.games.TFTManager;
 import hextechlibrary.games.tft.TFTSet;
+import hextechlibrary.games.tft.dto.SummonerTFT;
 import hextechlibrary.games.tft.dto.match.MatchTFT;
 import hextechlibrary.games.tft.dto.match.ParticipantTFT;
 import hextechlibrary.games.tft.dto.match.Unit;
@@ -41,9 +42,13 @@ public class Main {
     * */
 
     private static final String lol = "RGAPI-dbd6d858-570a-4103-a22f-76c94c370609";
-    private static final String tft = "RGAPI-b8721351-f040-49c4-b19a-af77243a2b26";
+    //I only have a LoL API Key so these two will used the Development key
+    //LoR code isn't actually implemented yet at all
+    private static final String lor = "LoR_KEY";
+    private static final String tft = "RGAPI-ec218c8b-6d73-489d-b1a2-2636a1aa73b5";
 
-    private static final HextechLibrary hextechLibrary = new HextechLibrary(lol,"LoR_Key",tft);
+
+    private static final HextechLibrary hextechLibrary = new HextechLibrary(lol,lor,tft);
     private static final RAPIManager rapiManager = hextechLibrary.getRapiManager();
 
     public static void main(String[] args) throws JsonProcessingException {
@@ -157,18 +162,74 @@ public class Main {
      * @throws IOException Creates an Excel file
      */
     public static void matchTable(MatchTFT matchTFT) throws IOException {
+        String[] usernames = {"Monstrata","Thylako","I PlayOnceAWeek","Camelot","My Left Thumb","neoprotector","Strategies","doviFuneral","Esther","Dunkmaster69","Just Dave 26","Zavex","SoulCry","Best Sett World","Eunovation","morimosss","Hailong","Zanazerge","Qwerty10x","DarthLargeLoad","Camelot"};
+        List<SummonerTFT> summonerTFTS = new ArrayList<>();
+
+        for (String username:usernames) {
+            summonerTFTS.add(rapiManager.getSummonerTFTByName(username));
+        }
+
         TFTManager tftManager = new TFTManager();
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet(matchTFT.getMetadata().getMatch_id());
+
+        Sheet sheet = workbook.createSheet("Players");
         Row header = sheet.createRow(0);
+
         Cell headerCell = header.createCell(0);
-        headerCell.setCellValue("Players:");
+        headerCell.setCellValue("id");
         headerCell = header.createCell(1);
-        headerCell.setCellValue("PUUID:");
+        headerCell.setCellValue("accountID");
         headerCell = header.createCell(2);
-        headerCell.setCellValue("Item: ");
+        headerCell.setCellValue("puuid");
+        headerCell = header.createCell(3);
+        headerCell.setCellValue("name");
+        headerCell = header.createCell(4);
+        headerCell.setCellValue("profileIconId");
+        headerCell = header.createCell(5);
+        headerCell.setCellValue("revisionDate");
+        headerCell = header.createCell(6);
+        headerCell.setCellValue("summonerLevel");
 
         int rownum = 1;
+        for (SummonerTFT summonerTFT:summonerTFTS) {
+            Row row = sheet.createRow(rownum);
+            Cell cell = row.createCell(0);
+            //CellStyle celltyle = workbook.createCellStyle();
+            //celltyle.setShrinkToFit(true);
+            //cell.setCellStyle(celltyle);
+
+            cell.setCellValue(summonerTFT.getId());
+            cell = row.createCell(1);
+            cell.setCellValue(summonerTFT.getAccountId());
+
+            cell = row.createCell(2);
+            cell.setCellValue(summonerTFT.getPuuid());
+
+            cell = row.createCell(3);
+            cell.setCellValue(summonerTFT.getName());
+
+            cell = row.createCell(4);
+            cell.setCellValue(summonerTFT.getProfileIconId());
+
+            cell = row.createCell(5);
+            cell.setCellValue(summonerTFT.getRevisionDate());
+
+            cell = row.createCell(6);
+            cell.setCellValue(summonerTFT.getSummonerLevel());
+            rownum++;
+        }
+
+
+        sheet = workbook.createSheet(matchTFT.getMetadata().getMatch_id());
+        header = sheet.createRow(0);
+        headerCell = header.createCell(0);
+        headerCell.setCellValue("Players (Account Names):");
+        headerCell = header.createCell(1);
+        headerCell.setCellValue("PUUIDs:");
+        headerCell = header.createCell(2);
+        headerCell.setCellValue("Items: ");
+
+        rownum = 1;
         int index = 0;
         for (ParticipantTFT par:matchTFT.getInfo().getParticipants()) {
             Row row = sheet.createRow(rownum);
@@ -191,7 +252,6 @@ public class Main {
             for (Unit unit:matchTFT.getInfo().getParticipants().get(index).getUnits()) {
                 if (!unit.getItems().isEmpty()){
                     for (int id: unit.getItems()) {
-                        System.out.println(id);
                         items.add(
 
                                 tftManager

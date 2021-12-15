@@ -2,7 +2,16 @@ package hextechlibrary.games;
 
 import hextechlibrary.games.tft.sets.five.SetFive;
 
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
+
 public class TFTManager {
+    InputStream in= getClass().getResourceAsStream("/json/tft/setfive/items.json");
+    InputStreamReader fr= new InputStreamReader(in, StandardCharsets.UTF_8);;
+
     String SetFiveChampionJSON =
             "[\n" + "  {\n" + "    \"name\": \"Target Dummy\",\n" + "    \"championId\": \"TFT_TrainingDummy\",\n" + "    \"cost\": 2,\n" + "    \"traits\": []\n" + "  },\n" + "  {\n" + "    \"name\": \"Aatrox\",\n" + "    \"championId\": \"TFT5_Aatrox\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Redeemed\",\n" + "      \"Set5_Legionnaire\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Akshan\",\n" + "    \"championId\": \"TFT5_Akshan\",\n" + "    \"cost\": 5,\n" + "    \"traits\": [\n" + "      \"Set5_Sentinel\",\n" + "      \"Set5_Ranger\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Aphelios\",\n" + "    \"championId\": \"TFT5_Aphelios\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Nightbringer\",\n" + "      \"Set5_Ranger\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Ashe\",\n" + "    \"championId\": \"TFT5_Ashe\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Draconic\",\n" + "      \"Set5_Ranger\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Brand\",\n" + "    \"championId\": \"TFT5_Brand\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Abomination\",\n" + "      \"Set5_Spellweaver\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Diana\",\n" + "    \"championId\": \"TFT5_Diana\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Nightbringer\",\n" + "      \"Set5_Assassin\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Draven\",\n" + "    \"championId\": \"TFT5_Draven\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Forgotten\",\n" + "      \"Set5_Legionnaire\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Fiddlesticks\",\n" + "    \"championId\": \"TFT5_Fiddlesticks\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Abomination\",\n" + "      \"Set5_Revenant\",\n" + "      \"Set5_Mystic\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Galio\",\n" + "    \"championId\": \"TFT5_Galio\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Draconic\",\n" + "      \"Set5_Sentinel\",\n" + "      \"Set5_Knight\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Garen\",\n" + "    \"championId\": \"TFT5_Garen\",\n" + "    \"cost\": 5,\n" + "    \"traits\": [\n" + "      \"Set5_Victorious\",\n" + "      \"Set5_Dawnbringer\",\n" + "      \"Set5_Knight\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Gragas\",\n" + "    \"championId\": \"TFT5_Gragas\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Dawnbringer\",\n" + "      \"Set5_Brawler\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Gwen\",\n" + "    \"championId\": \"TFT5_Gwen\",\n" + "    \"cost\": 5,\n" + "    \"traits\": [\n" + "      \"Set5_Inanimate\",\n" + "      \"Set5_Mystic\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Hecarim\",\n" + "    \"championId\": \"TFT5_Hecarim\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Forgotten\",\n" + "      \"Set5_Cavalier\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Heimerdinger\",\n" + "    \"championId\": \"TFT5_Heimerdinger\",\n" + "    \"cost\": 5,\n" + "    \"traits\": [\n" + "      \"Set5_Draconic\",\n" + "      \"Set5_Renewer\",\n" + "      \"Set5_Caretaker\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Ivern\",\n" + "    \"championId\": \"TFT5_Ivern\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Revenant\",\n" + "      \"Set5_Invoker\",\n" + "      \"Set5_Renewer\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Irelia\",\n" + "    \"championId\": \"TFT5_Irelia\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Sentinel\",\n" + "      \"Set5_Skirmisher\",\n" + "      \"Set5_Legionnaire\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Jax\",\n" + "    \"championId\": \"TFT5_Jax\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Ironclad\",\n" + "      \"Set5_Skirmisher\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Kalista\",\n" + "    \"championId\": \"TFT5_Kalista\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Abomination\",\n" + "      \"Set5_Legionnaire\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Karma\",\n" + "    \"championId\": \"TFT5_Karma\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Dawnbringer\",\n" + "      \"Set5_Invoker\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Kayle\",\n" + "    \"championId\": \"TFT5_Kayle\",\n" + "    \"cost\": 5,\n" + "    \"traits\": [\n" + "      \"Set5_Redeemed\",\n" + "      \"Set5_Legionnaire\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Kennen\",\n" + "    \"championId\": \"TFT5_Kennen\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Hellion\",\n" + "      \"Set5_Skirmisher\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Kha'Zix\",\n" + "    \"championId\": \"TFT5_Khazix\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Dawnbringer\",\n" + "      \"Set5_Assassin\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Kled\",\n" + "    \"championId\": \"TFT5_Kled\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Hellion\",\n" + "      \"Set5_Cavalier\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Lee Sin\",\n" + "    \"championId\": \"TFT5_LeeSin\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Nightbringer\",\n" + "      \"Set5_Skirmisher\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Leona\",\n" + "    \"championId\": \"TFT5_Leona\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Redeemed\",\n" + "      \"Set5_Knight\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Lucian\",\n" + "    \"championId\": \"TFT5_Lucian\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Sentinel\",\n" + "      \"Set5_Cannoneer\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Lulu\",\n" + "    \"championId\": \"TFT5_Lulu\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Hellion\",\n" + "      \"Set5_Mystic\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Lux\",\n" + "    \"championId\": \"TFT5_Lux\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Redeemed\",\n" + "      \"Set5_Mystic\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Miss Fortune\",\n" + "    \"championId\": \"TFT5_MissFortune\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Forgotten\",\n" + "      \"Set5_Cannoneer\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Nautilus\",\n" + "    \"championId\": \"TFT5_Nautilus\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Ironclad\",\n" + "      \"Set5_Knight\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Nidalee\",\n" + "    \"championId\": \"TFT5_Nidalee\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Dawnbringer\",\n" + "      \"Set5_Skirmisher\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Nocturne\",\n" + "    \"championId\": \"TFT5_Nocturne\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Revenant\",\n" + "      \"Set5_Assassin\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Nunu\",\n" + "    \"championId\": \"TFT5_Nunu\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Abomination\",\n" + "      \"Set5_Brawler\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Olaf\",\n" + "    \"championId\": \"TFT5_Olaf\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Sentinel\",\n" + "      \"Set5_Skirmisher\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Poppy\",\n" + "    \"championId\": \"TFT5_Poppy\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Hellion\",\n" + "      \"Set5_Knight\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Pyke\",\n" + "    \"championId\": \"TFT5_Pyke\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Sentinel\",\n" + "      \"Set5_Assassin\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Rakan\",\n" + "    \"championId\": \"TFT5_Rakan\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Sentinel\",\n" + "      \"Set5_Renewer\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Rell\",\n" + "    \"championId\": \"TFT5_Rell\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Redeemed\",\n" + "      \"Set5_Ironclad\",\n" + "      \"Set5_Cavalier\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Riven\",\n" + "    \"championId\": \"TFT5_Riven\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Dawnbringer\",\n" + "      \"Set5_Legionnaire\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Sejuani\",\n" + "    \"championId\": \"TFT5_Sejuani\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Brawler\",\n" + "      \"Set5_Nightbringer\",\n" + "      \"Set5_Cavalier\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Senna\",\n" + "    \"championId\": \"TFT5_Senna\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Sentinel\",\n" + "      \"Set5_Cannoneer\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Sett\",\n" + "    \"championId\": \"TFT5_Sett\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Draconic\",\n" + "      \"Set5_Brawler\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Soraka\",\n" + "    \"championId\": \"TFT5_Soraka\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Dawnbringer\",\n" + "      \"Set5_Renewer\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Syndra\",\n" + "    \"championId\": \"TFT5_Syndra\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Redeemed\",\n" + "      \"Set5_Invoker\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Teemo\",\n" + "    \"championId\": \"TFT5_Teemo\",\n" + "    \"cost\": 5,\n" + "    \"traits\": [\n" + "      \"Set5_Cruel\",\n" + "      \"Set5_Hellion\",\n" + "      \"Set5_Invoker\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Thresh\",\n" + "    \"championId\": \"TFT5_Thresh\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Forgotten\",\n" + "      \"Set5_Knight\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Tristana\",\n" + "    \"championId\": \"TFT5_Tristana\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Hellion\",\n" + "      \"Set5_Cannoneer\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Udyr\",\n" + "    \"championId\": \"TFT5_Udyr\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Draconic\",\n" + "      \"Set5_Skirmisher\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Varus\",\n" + "    \"championId\": \"TFT5_Varus\",\n" + "    \"cost\": 2,\n" + "    \"traits\": [\n" + "      \"Set5_Redeemed\",\n" + "      \"Set5_Ranger\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Vayne\",\n" + "    \"championId\": \"TFT5_Vayne\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Forgotten\",\n" + "      \"Set5_Ranger\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Vel'Koz\",\n" + "    \"championId\": \"TFT5_Velkoz\",\n" + "    \"cost\": 4,\n" + "    \"traits\": [\n" + "      \"Set5_Redeemed\",\n" + "      \"Set5_Spellweaver\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Viego\",\n" + "    \"championId\": \"TFT5_Viego\",\n" + "    \"cost\": 5,\n" + "    \"traits\": [\n" + "      \"Set5_Forgotten\",\n" + "      \"Set5_Skirmisher\",\n" + "      \"Set5_Assassin\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Vladimir\",\n" + "    \"championId\": \"TFT5_Vladimir\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Nightbringer\",\n" + "      \"Set5_Renewer\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Volibear\",\n" + "    \"championId\": \"TFT5_Volibear\",\n" + "    \"cost\": 5,\n" + "    \"traits\": [\n" + "      \"Set5_Revenant\",\n" + "      \"Set5_Brawler\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Yasuo\",\n" + "    \"championId\": \"TFT5_Yasuo\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Nightbringer\",\n" + "      \"Set5_Legionnaire\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Ziggs\",\n" + "    \"championId\": \"TFT5_Ziggs\",\n" + "    \"cost\": 1,\n" + "    \"traits\": [\n" + "      \"Set5_Hellion\",\n" + "      \"Set5_Spellweaver\"\n" + "    ]\n" + "  },\n" + "  {\n" + "    \"name\": \"Zyra\",\n" + "    \"championId\": \"TFT5_Zyra\",\n" + "    \"cost\": 3,\n" + "    \"traits\": [\n" + "      \"Set5_Draconic\",\n" + "      \"Set5_Spellweaver\"\n" + "    ]\n" + "  }\n" + "]";
     String SetFiveItemJSON =
@@ -13,10 +22,81 @@ public class TFTManager {
     private final SetFive setFive;
 
     public TFTManager() {
-        this.setFive = new SetFive(SetFiveChampionJSON, SetFiveItemJSON,SetFiveTraitsJSON, 5,1115);
+        this.setFive = new SetFive(
+                getJSONFromResources("/json/tft/setfive/champions.json"),
+                getJSONFromResources("/json/tft/setfive/items.json"),
+                getJSONFromResources("/json/tft/setfive/traits.json"),
+                5,1115);
+
+        //returnStringInputStream(getFileFromResourceAsStream("/json/tft/setfive/items.json"));
     }
 
     public SetFive getSetFive() {
         return setFive;
+    }
+
+    /**
+     *
+     * @param resource directory of the JSON resource
+     * @return string of the json file
+     */
+    private String getJSONFromResources(String resource) {
+        StringBuilder json = new StringBuilder();
+        // The class loader that loaded the class
+        //ClassLoader classLoader = getClass().getClassLoader();
+        InputStream inputStream = getClass().getResourceAsStream(resource);
+
+        // the stream holding the file content
+        if (inputStream == null) {
+            throw new IllegalArgumentException("file not found! " + resource);
+        } else {
+            try (InputStreamReader streamReader =
+                         new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                 BufferedReader reader = new BufferedReader(streamReader)) {
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    json.append(line);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return json.toString();
+    }
+
+    // print input stream
+    private static String returnStringInputStream(InputStream is) {
+        StringBuilder json = new StringBuilder();
+
+        try (InputStreamReader streamReader =
+                     new InputStreamReader(is, StandardCharsets.UTF_8);
+             BufferedReader reader = new BufferedReader(streamReader)) {
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                json.append(line);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return json.toString();
+    }
+
+    // print a file
+    private static void printFile(File file) {
+
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+            lines.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

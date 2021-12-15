@@ -1,11 +1,9 @@
 package hextechlibrary.games.tft.sets.five;
 
-import hextechlibrary.games.tft.ITFTSet;
 import hextechlibrary.games.tft.TFTSet;
-import hextechlibrary.games.tft.sets.five.patch1115.Item;
 
 
-public class SetFive extends TFTSet implements ITFTSet {
+public class SetFive extends TFTSet {
 
     /**
      * @param championsJSON TFT Set Champions JSON String
