@@ -98,10 +98,10 @@ public abstract class TFTSet {
     /**
      * Returns an item object based on the id
      * @param id tft item id
-     * @return tft item object
+     * @return tft item object or null object if not valid object found
      */
     public Item getItemByID(int id) {
-        for(Item item : getItems()){
+        for(Item item : items){
             if(item.getId() == id){
                 return item;
             }

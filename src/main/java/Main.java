@@ -9,14 +9,13 @@ import hextechlibrary.games.tft.dto.match.Unit;
 import hextechlibrary.games.tft.objects.ParticipantsTFT;
 import hextechlibrary.games.tft.sets.five.SetFive;
 import hextechlibrary.games.tft.sets.five.patch1115.Champion;
+import hextechlibrary.games.tft.sets.five.patch1115.Item;
 import hextechlibrary.games.tft.sets.five.patch1115.Trait;
 import hextechlibrary.riotapi.RAPIManager;
 
 import java.io.File;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -26,10 +25,8 @@ import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.List;
 
 
 public class Main {
@@ -43,27 +40,22 @@ public class Main {
     }
     * */
 
+    private static final String lol = "RGAPI-dbd6d858-570a-4103-a22f-76c94c370609";
+    private static final String tft = "RGAPI-b8721351-f040-49c4-b19a-af77243a2b26";
+
+    private static final HextechLibrary hextechLibrary = new HextechLibrary(lol,"LoR_Key",tft);
+    private static final RAPIManager rapiManager = hextechLibrary.getRapiManager();
+
     public static void main(String[] args) throws JsonProcessingException {
         //JavaGUI();
         //HTL();
         //setFive();
-        String lol = "RGAPI-dbd6d858-570a-4103-a22f-76c94c370609";
-        String tft = "RGAPI-1b7223f5-88e8-4dfa-b9b3-6f4445984691";
-
-        HextechLibrary hextechLibrary = new HextechLibrary(lol,tft);
-        RAPIManager rapiManager = matchTable(hextechLibrary.getRapiManager();
-
 
         try {
-            rapiManager.getTFTMatchByMatchID(
-                    rapiManager.getTFTMatchesByPUUID(
-                            rapiManager.getSummonerTFTByName("JackWildBurn").getPuuid(), 1)
-                            .get(0)
-            );
+            matchTable(rapiManager.getTFTMatchByMatchID("NA1_4133729909"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private static void JavaGUI(){
@@ -107,12 +99,12 @@ public class Main {
     private static void setFive(){
         //API KEYS
         String lol = "RGAPI-dbd6d858-570a-4103-a22f-76c94c370609";
-        String tft = "RGAPI-4b5d27c7-7630-4cac-a368-ae3784f8ad4c";
+        String tft = "RGAPI-14e6cf28-60c6-4db0-9c6c-a74903666c2b";
 
-        HextechLibrary hextechLibrary = new HextechLibrary(lol,tft);
+        HextechLibrary hextechLibrary = new HextechLibrary(lol,"LOR_Key",tft);
         TFTManager tftManager = hextechLibrary.getTftManager();
         //setInfo(tftManager);
-        randomIinfo(tftManager);
+        //randomIinfo(tftManager);
     }
 
     private static void setInfo(TFTManager tftManager){
@@ -159,7 +151,13 @@ public class Main {
         System.out.println(string);
     }
 
+    /**
+     * Creates a ExelFile for Matches
+     * @param matchTFT TFT match object
+     * @throws IOException Creates an Excel file
+     */
     public static void matchTable(MatchTFT matchTFT) throws IOException {
+        TFTManager tftManager = new TFTManager();
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet(matchTFT.getMetadata().getMatch_id());
         Row header = sheet.createRow(0);
@@ -167,24 +165,58 @@ public class Main {
         headerCell.setCellValue("Players:");
         headerCell = header.createCell(1);
         headerCell.setCellValue("PUUID:");
+        headerCell = header.createCell(2);
+        headerCell.setCellValue("Item: ");
 
-        int index = 0;
         int rownum = 1;
+        int index = 0;
         for (ParticipantTFT par:matchTFT.getInfo().getParticipants()) {
             Row row = sheet.createRow(rownum);
             Cell cell = row.createCell(0);
-            cell.setCellValue("Joe");
+            //CellStyle celltyle = workbook.createCellStyle();
+            //celltyle.setShrinkToFit(true);
+            //cell.setCellStyle(celltyle);
+
+            cell.setCellValue(hextechLibrary.getRapiManager().getSummonerTFTByPUUID(par.getPuuid()).getName());
 
             cell = row.createCell(1);
             cell.setCellValue(par.getPuuid());
+
+            cell = row.createCell(2);
+            StringBuilder stringBuilder = new StringBuilder();
+            List<String> items = new ArrayList<>();
+
+            stringBuilder.append(matchTFT.getInfo().getParticipants().get(index).getUnits().get(0).getItems());
+
+            for (Unit unit:matchTFT.getInfo().getParticipants().get(index).getUnits()) {
+                if (!unit.getItems().isEmpty()){
+                    for (int id: unit.getItems()) {
+                        System.out.println(id);
+                        items.add(
+
+                                tftManager
+                                        .getSetFive()
+                                        .getItemByID(id)
+                                        .getName()
+                        );
+                    }
+
+                }
+            }
+
+
+            //for (Unit unit:matchTFT.getInfo().getParticipants().get(index).getUnits()) {stringBuilder.append(unit.getCharacterId()).append(",");}
+
+            cell.setCellValue(stringBuilder.toString());
+
+            workbook.getSheetAt(0).autoSizeColumn(0);
+            workbook.getSheetAt(0).autoSizeColumn(1);
+            workbook.getSheetAt(0).autoSizeColumn(2);
             rownum++;
+            index++;
         }
 
-        File currDir = new File(".");
-        String path = currDir.getAbsolutePath();
-        String fileLocation = path.substring(0, path.length() - 1) + "C:/Users/mgt_bsthomas4/Documents/sheet.xlsx";
-
-        FileOutputStream outputStream = new FileOutputStream(fileLocation);
+        FileOutputStream outputStream = new FileOutputStream("C:/Users/mgt_bsthomas4/Documents/sheet.xlsx");
         workbook.write(outputStream);
         workbook.close();
 
@@ -244,7 +276,7 @@ public class Main {
     private static void HTL(){
 
         try {
-            HextechLibrary hextechLibrary = new HextechLibrary("","");
+            HextechLibrary hextechLibrary = new HextechLibrary("","","");
             RAPIManager rapiManager = hextechLibrary.getRapiManager();
 
             String puuid = rapiManager.getSummonerTFTByName("JackWildBurn").getPuuid();

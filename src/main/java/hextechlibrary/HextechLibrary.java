@@ -13,9 +13,9 @@ public class HextechLibrary{
 
     RAPIManager rapiManager;
 
-    public HextechLibrary(String lol_api_key, String tft_api_key) {
+    public HextechLibrary(String lol_api_key, String lor_key,String tft_api_key) {
         this.lolKey = lol_api_key;
-        this.lorKey = "LoR-KEY";
+        this.lorKey = lor_key;
         this.tftKey = tft_api_key;
         this.rapiManager = new RAPIManager(lolKey, lorKey, tftKey);
         this.tftManager = new TFTManager();
@@ -23,6 +23,14 @@ public class HextechLibrary{
 
     public String getLolKey() {
         return lolKey;
+    }
+
+    public String getLorKey() {
+        return lorKey;
+    }
+
+    public String getTftKey() {
+        return tftKey;
     }
 
     public RAPIManager getRapiManager() {

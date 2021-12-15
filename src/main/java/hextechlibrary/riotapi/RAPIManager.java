@@ -156,6 +156,8 @@ public class RAPIManager{
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", TFT_KEY)
+                .header("Accept-Charset", "application/x-www-form-urlencoded; charset=UTF-8")
+                .header("Origin", "https://developer.riotgames.com")
                 .url("https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/" + puuid + args)
                 .build();
 
@@ -168,6 +170,7 @@ public class RAPIManager{
 
         return List.of(objectMapper.readValue(responseJSON, String[].class));
     }
+
     /**
      *  Returns a Match object
      *
