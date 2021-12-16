@@ -1,2 +1,5 @@
-# hextechlibrary
- Test Riot Games League of Legends API Java Wrapper
+# Hextech Library
+
+A Riot Games API Java Wrapper
+
+## Summery

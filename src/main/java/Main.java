@@ -2,14 +2,10 @@
 import com.fasterxml.jackson.core.JsonProcessingException;
 import hextechlibrary.HextechLibrary;
 import hextechlibrary.games.TFTManager;
-import hextechlibrary.games.leagueoflegends.dto.match.Match;
 import hextechlibrary.games.tft.TFTSet;
 import hextechlibrary.games.tft.dto.SummonerTFT;
 import hextechlibrary.games.tft.dto.match.MatchTFT;
 import hextechlibrary.games.tft.dto.match.ParticipantTFT;
-import hextechlibrary.games.tft.dto.match.Unit;
-import hextechlibrary.games.tft.objects.ParticipantsTFT;
-import hextechlibrary.games.tft.sets.five.SetFive;
 import hextechlibrary.games.tft.sets.five.patch1115.Champion;
 import hextechlibrary.games.tft.sets.five.patch1115.Trait;
 import hextechlibrary.riotapi.RAPIManager;
@@ -17,39 +13,25 @@ import hextechlibrary.riotapi.RAPIManager;
 import java.io.*;
 
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 
 
 public class Main {
-    /*
-    {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
-    "Origin": "https://developer.riotgames.com",
-    "X-Riot-Token": "RGAPI-dbd6d858-570a-4103-a22f-76c94c370609"
-    }
-    * */
-
     private static final String lol = "RGAPI-dbd6d858-570a-4103-a22f-76c94c370609";
     //I only have a LoL API Key so these two will used the Development key
     //LoR code isn't actually implemented yet at all
     private static final String lor = "LoR_KEY";
-    private static final String tft = "RGAPI-ec218c8b-6d73-489d-b1a2-2636a1aa73b5";
+    private static final String tft = "RGAPI-76597c59-60b9-4fac-8afd-4fd2122e94dc";
 
     private static final HextechLibrary hextechLibrary = new HextechLibrary(lol,lor,tft);
     private static final RAPIManager rapiManager = hextechLibrary.getRapiManager();
 
     public static void main(String[] args){
-        //JavaGUI();
         //HTL();
         //setFive();
         //rapiManager.getTFTMatchByMatchID("NA1_4133729909")
@@ -469,44 +451,6 @@ public class Main {
         }
     }
 
-    private static void JavaGUI(){
-        //Creating the Frame
-        JFrame frame = new JFrame("Chat Frame");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 400);
-
-        //Creating the MenuBar and adding components
-        JMenuBar mb = new JMenuBar();
-        JMenu m1 = new JMenu("FILE");
-        JMenu m2 = new JMenu("Help");
-        mb.add(m1);
-        mb.add(m2);
-        JMenuItem m11 = new JMenuItem("Open");
-        JMenuItem m22 = new JMenuItem("Save as");
-        m1.add(m11);
-        m1.add(m22);
-
-        //Creating the panel at bottom and adding components
-        JPanel panel = new JPanel(); // the panel is not visible in output
-        JLabel label = new JLabel("Enter Text");
-        JTextField tf = new JTextField(10); // accepts upto 10 characters
-        JButton send = new JButton("Send");
-        JButton reset = new JButton("Reset");
-        panel.add(label); // Components Added using Flow Layout
-        panel.add(tf);
-        panel.add(send);
-        panel.add(reset);
-
-        // Text Area at the Center
-        JTextArea ta = new JTextArea();
-
-        //Adding Components to the frame.
-        frame.getContentPane().add(BorderLayout.SOUTH, panel);
-        frame.getContentPane().add(BorderLayout.NORTH, mb);
-        frame.getContentPane().add(BorderLayout.CENTER, ta);
-        frame.setVisible(true);
-    }
-
     private static void setFive(){
         //API KEYS
         String lol = "RGAPI-dbd6d858-570a-4103-a22f-76c94c370609";
@@ -560,173 +504,6 @@ public class Main {
                     .append("\n");
         }
         System.out.println(string);
-    }
-
-    //Pulls in the excel file if it already exists
-    public static void appendExcelFile() {
-        Workbook workbook = new XSSFWorkbook();
-        JFileChooser jFileChooser = new JFileChooser();
-        FileSystemView fileSystemView = jFileChooser.getFileSystemView();
-
-        String path = fileSystemView.getDefaultDirectory().toString() + "/sheet.xlsx";
-
-        FileInputStream inputStream;
-        try {
-            inputStream = new FileInputStream(new File(path));
-            workbook = WorkbookFactory.create(inputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void createExel(){
-        // workbook object
-        XSSFWorkbook workbook = new XSSFWorkbook();
-        // spreadsheet object
-        XSSFSheet spreadsheet = workbook.createSheet(" Student Data ");
-        // creating a row object
-        XSSFRow row;
-        // This data needs to be written (Object[])
-        Map<String, Object[]> studentData = new TreeMap<String, Object[]>();
-
-        studentData.put("1", new Object[] { "Roll No", "NAME", "Year" });
-        studentData.put("2", new Object[] { "128", "Aditya", "2nd year" });
-        studentData.put("3", new Object[] { "129", "Narayana", "2nd year" });
-        studentData.put("4", new Object[] { "130", "Mohan", "2nd year" });
-        studentData.put("5", new Object[] { "131", "Radha", "2nd year" });
-        studentData.put("6", new Object[] { "132", "Gopal", "2nd year" });
-
-        Set<String> keyid = studentData.keySet();
-        int rowid = 0;
-
-        // writing the data into the sheets...
-        for (String key : keyid) {
-            row = spreadsheet.createRow(rowid++);
-            Object[] objectArr = studentData.get(key);
-            int cellid = 0;
-
-            for (Object obj : objectArr) {
-                Cell cell = row.createCell(cellid++);
-                cell.setCellValue((String)obj);
-            }
-        }
-
-        // .xlsx is the format for Excel Sheets...
-        // writing the workbook into the file...
-        FileOutputStream out = null;
-        try {
-            out = new FileOutputStream(new File("C:/Users/mgt_bsthomas4/Documents/GFGsheet.xlsx"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            workbook.write(out);
-            if (out != null) {
-                out.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void HTL(){
-
-        try {
-            HextechLibrary hextechLibrary = new HextechLibrary("","","");
-            RAPIManager rapiManager = hextechLibrary.getRapiManager();
-
-            String puuid = rapiManager.getSummonerTFTByName("JackWildBurn").getPuuid();
-            MatchTFT matchTFT = rapiManager.getTFTMatchByMatchID(rapiManager.getTFTMatchesByPUUID(puuid,1).get(0));
-
-            ParticipantsTFT participantsTFT = new ParticipantsTFT(matchTFT.getInfo().getParticipants());
-            ParticipantTFT matchParticipant = participantsTFT.getParticipantByPUUID(puuid);
-
-
-            TFTManager tftManager = new TFTManager();
-            SetFive setFive = tftManager.getSetFive();
-
-            System.out.println(setFive.getItemByID(1).getName());
-
-            for (ParticipantTFT participantTFT:participantsTFT.getParticipantsList()) {
-                System.out.println(rapiManager.getSummonerTFTByPUUID(participantTFT.getPuuid()).getName());
-            }
-
-            StringBuilder line = new  StringBuilder();
-            for (Unit unit: matchParticipant.getUnits()) {
-                line
-                        .append("\nName: ")
-                        .append(unit.getName())
-                        .append("\nCharacterID:")
-                        .append(unit.getCharacterId())
-                        .append("\nTier:")
-                        .append(unit.getTier())
-                        .append("\nRarity:")
-                        .append(unit.getRarity())
-                        .append("\n")
-                        .append("Items: ");
-                for (int item: unit.getItems()) {
-                    line.append(setFive.getItemByID(item).getName())
-                            .append(", ");
-                }
-                line.append("\n=====");
-            }
-
-
-            System.out.println(line);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        /*
-        // create  instance object
-        LocalDateTime Today = LocalDateTime.now();
-        LocalDateTime yesterday = Today.minusDays(10);
-
-        LocalDateTime now = LocalDateTime.now();
-        ZoneId zone = ZoneId.systemDefault();
-        ZoneOffset zoneOffSet = zone.getRules().getOffset(yesterday);
-
-        System.out.println("Oie: " + yesterday.toEpochSecond(zoneOffSet));
-
-        Instant instant = Instant.now();
-        //Instant startTime = endTime.minus();
-
-        // print Instant Value
-        System.out.println("Instant: " + instant);
-        // get epochValue using getEpochSecond
-        long epochValue = instant.getEpochSecond();
-        // print results
-        System.out.println("Java epoch Value: " + epochValue);
-        */
-    }
-
-    private static void  testerpull() throws IOException {
-        //obtaining input bytes from a file
-        FileInputStream fis=new FileInputStream(new File("C:\\demo\\student.xls"));
-        XSSFWorkbook wb = new XSSFWorkbook(fis);
-        Sheet sheet=wb.getSheetAt(0);
-
-        FormulaEvaluator formulaEvaluator=wb.getCreationHelper().createFormulaEvaluator();
-
-        for(Row row: sheet) //iteration over row using for each loop
-        {
-            for(Cell cell: row) //iteration over cell using for each loop
-            {
-                switch(formulaEvaluator.evaluateInCell(cell).getCellType())
-                {
-                    case NUMERIC:   //field that represents numeric cell type
-                        // getting the value of the cell as a number
-                        System.out.print(cell.getNumericCellValue()+ "\t\t");
-                        break;
-                    case STRING:    //field that represents string cell type
-                        // getting the value of the cell as a string
-                        System.out.print(cell.getStringCellValue()+ "\t\t");
-                        break;
-                }
-            }
-            System.out.println();
-        }
     }
 }
 
