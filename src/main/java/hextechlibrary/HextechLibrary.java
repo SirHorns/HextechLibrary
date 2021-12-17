@@ -1,7 +1,7 @@
 package hextechlibrary;
 
 import hextechlibrary.games.TFTManager;
-import hextechlibrary.riotapi.RAPIManager;
+import hextechlibrary.api.RAPIManager;
 
 
 public class HextechLibrary{

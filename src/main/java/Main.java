@@ -8,7 +8,7 @@ import hextechlibrary.games.tft.dto.match.MatchTFT;
 import hextechlibrary.games.tft.dto.match.ParticipantTFT;
 import hextechlibrary.games.tft.sets.five.patch1115.Champion;
 import hextechlibrary.games.tft.sets.five.patch1115.Trait;
-import hextechlibrary.riotapi.RAPIManager;
+import hextechlibrary.api.RAPIManager;
 
 import java.io.*;
 

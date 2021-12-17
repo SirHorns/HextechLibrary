@@ -1,6 +1,5 @@
-package hextechlibrary.riotapi;
+package hextechlibrary.api;
 
-import hextechlibrary.games.TFTManager;
 import hextechlibrary.games.leagueoflegends.dto.match.Match;
 import hextechlibrary.games.leagueoflegends.dto.summoner.Summoner;
 import hextechlibrary.games.tft.dto.SummonerTFT;
@@ -20,19 +19,18 @@ public class RAPIManager{
 
     private final OkHttpClient client = new OkHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    String LOL_KEY;
-    String LOR_KEY;
-    String TFT_KEY;
-    TFTManager tftManager;
+    private String LOL_KEY;
+    private String LOR_KEY;
+    private String TFT_KEY;
 
     public RAPIManager(String lolkey, String lorkey, String tftkey) {
-        this.LOL_KEY = lolkey;
-        this.LOR_KEY = lorkey;
-        this.TFT_KEY = tftkey;
+        LOL_KEY = lolkey;
+        LOR_KEY = lorkey;
+        TFT_KEY = tftkey;
     }
 
     /**
-     * /
+     * Sets the TFT API Key
      * @param tft_key Team Fight Tactics API Key
      */
     public void setTFT_KEY(String tft_key) {
@@ -40,15 +38,15 @@ public class RAPIManager{
     }
 
     /**
-     * /
-     * @return  League of Legends API Key
+     * Returns the set League of Legends API Key
+     * @return  League of Legends API Key string
      */
     public String getLOL_KEY() {
         return LOL_KEY;
     }
 
     /**
-     *
+     * Returns the set Legends of Runtera API Key
      * @param LOL_KEY League of Legends API Key
      */
     public void setLOL_KEY(String LOL_KEY) {
@@ -56,90 +54,11 @@ public class RAPIManager{
     }
 
     /**
-     *
+     * Returns the set Team Fight Tactics API Key
      * @return Team Fight Tactics API Key
      */
     public String getTFT_KEY() {
         return TFT_KEY;
-    }
-
-    //LoL MATCH INFO
-    /**
-     *  Returns a list of Match object
-     *
-     * @param puuid PUUID of LoL account
-     //* @param startTime Epoch start timestamp in seconds. The matchlist started storing timestamps on June 16th, 2021. Any matches played before June 16th, 2021 won't be included in the results if the startTime filter is set.
-     //* @param endTime Epoch end timestamp in seconds.
-     //* @param queue Filter the list of match ids by a specific queue id. This filter is mutually inclusive of the type filter meaning any match ids returned must match both the queue and type filters.
-     //* @param type 	Filter the list of match ids by the type of match. This filter is mutually inclusive of the queue filter meaning any match ids returned must match both the queue and type filters.
-     //* @param start Defaults to 0. Start index.
-     //* @param count Defaults to 20. Valid values: 0 to 100. Number of match ids to return.
-     * @return List of matches based on puuid
-     */
-    public List<String> getMatchesByPUUID(String puuid) throws JsonProcessingException {
-        String responseJSON = "";
-        //, long startTime, long endTime, int queue, String type, int start, int count
-        //String args = "/ids?start=" + startTime + "&end=" + endTime + "&queue=" + queue + "&type=" + type + "&start=" + start + "&count=" + count;
-
-        Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_KEY)
-                .url("https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuid)
-                .build();
-
-        try (Response response = client.newCall(request).execute()){
-            responseJSON = Objects.requireNonNull(response.body()).string();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return List.of(objectMapper.readValue(responseJSON, String[].class));
-    }
-    /**
-     *  Returns a Match object
-     *
-     * @param matchId LoL Account ID
-     * @return Match object based on searched matchId
-     */
-    public Match getMatchByMatchID(String matchId) throws JsonProcessingException {
-        String responseJSON = "";
-
-        Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_KEY)
-                .url("https://americas.api.riotgames.com/lol/match/v5/matches/" + matchId)
-                .build();
-
-        try (Response response = client.newCall(request).execute()){
-            responseJSON = Objects.requireNonNull(response.body()).string();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return objectMapper.readValue(responseJSON, Match.class);
-    }
-    /**
-     *  Returns the timeline of a match
-     *
-     * @param matchId LoL Account ID
-     * @return Timeline of a match based on the matchId
-     */
-    public Match getMatchTimeLine(String matchId) throws JsonProcessingException {
-        String responseJSON = "";
-
-        Request request = new Request.Builder()
-                .header("X-Riot-Token", LOL_KEY)
-                .url("https://americas.api.riotgames.com/lol/match/v5/matches/" + matchId + "/timeline")
-                .build();
-
-        try (Response response = client.newCall(request).execute()){
-            responseJSON = Objects.requireNonNull(response.body()).string();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return objectMapper.readValue(responseJSON, Match.class);
     }
 
     //TFT MATCH INFO
@@ -152,13 +71,13 @@ public class RAPIManager{
      */
     public List<String> getTFTMatchesByPUUID(String puuid, int count) throws JsonProcessingException {
         String responseJSON = "";
-        String args = "/ids?count=" + count;
+        String args = puuid +"/ids?count=" + count;
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", TFT_KEY)
                 .header("Accept-Charset", "application/x-www-form-urlencoded; charset=UTF-8")
                 .header("Origin", "https://developer.riotgames.com")
-                .url("https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/" + puuid + args)
+                .url("https://americas.api.riotgames.com/tft/match/v1/matches/by-puuid/" + args)
                 .build();
 
         try (Response response = client.newCall(request).execute()){
