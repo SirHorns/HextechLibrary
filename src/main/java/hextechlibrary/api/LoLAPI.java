@@ -1,7 +1,6 @@
-package hextechlibrary.api.apis;
+package hextechlibrary.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import hextechlibrary.api.RiotAPI;
 import hextechlibrary.games.leagueoflegends.dto.match.Match;
 import hextechlibrary.games.leagueoflegends.dto.summoner.Summoner;
 import okhttp3.Request;
@@ -12,9 +11,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class LoLAPI extends RiotAPI {
-
-    public LoLAPI(String key) {
+    public LoLAPI(String key, String platform, String regional) {
         apiKey = key;
+        platformLink = platform;
+        regionalLink = regional;
     }
 
     //LoL SUMMONER INFO
@@ -29,7 +29,7 @@ public class LoLAPI extends RiotAPI {
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", apiKey)
-                .url("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-account/" + accountID)
+                .url(platformLink + "lol/summoner/v4/summoners/by-account/" + accountID)
                 .build();
 
         try (Response response = client.newCall(request).execute()){
@@ -52,7 +52,7 @@ public class LoLAPI extends RiotAPI {
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", apiKey)
-                .url("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" + name)
+                .url(platformLink + "lol/summoner/v4/summoners/by-name/" + name)
                 .build();
 
         try (Response response = client.newCall(request).execute()){
@@ -75,7 +75,7 @@ public class LoLAPI extends RiotAPI {
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", apiKey)
-                .url("https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/" + puuid)
+                .url(platformLink + "lol/summoner/v4/summoners/by-puuid/" + puuid)
                 .build();
 
         try (Response response = client.newCall(request).execute()){
@@ -98,7 +98,7 @@ public class LoLAPI extends RiotAPI {
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", apiKey)
-                .url("https://https://na1.api.riotgames.com/lol/summoner/v4/summoners/" + summonerID)
+                .url(platformLink + "lol/summoner/v4/summoners/" + summonerID)
                 .build();
 
         try (Response response = client.newCall(request).execute()){
@@ -131,7 +131,7 @@ public class LoLAPI extends RiotAPI {
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", apiKey)
-                .url("https://americas.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuid)
+                .url(regionalLink + "lol/match/v5/matches/by-puuid/" + puuid)
                 .build();
 
         try (Response response = client.newCall(request).execute()){
@@ -154,7 +154,7 @@ public class LoLAPI extends RiotAPI {
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", apiKey)
-                .url("https://americas.api.riotgames.com/lol/match/v5/matches/" + matchId)
+                .url(regionalLink + "lol/match/v5/matches/" + matchId)
                 .build();
 
         try (Response response = client.newCall(request).execute()){
@@ -177,7 +177,7 @@ public class LoLAPI extends RiotAPI {
 
         Request request = new Request.Builder()
                 .header("X-Riot-Token", apiKey)
-                .url("https://americas.api.riotgames.com/lol/match/v5/matches/" + matchId + "/timeline")
+                .url(regionalLink + "lol/match/v5/matches/" + matchId + "/timeline")
                 .build();
 
         try (Response response = client.newCall(request).execute()){

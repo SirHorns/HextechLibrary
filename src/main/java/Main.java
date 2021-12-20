@@ -1,6 +1,7 @@
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import hextechlibrary.HextechLibrary;
+import hextechlibrary.api.TfTAPI;
 import hextechlibrary.games.TFTManager;
 import hextechlibrary.games.tft.TFTSet;
 import hextechlibrary.games.tft.dto.SummonerTFT;
@@ -8,7 +9,6 @@ import hextechlibrary.games.tft.dto.match.MatchTFT;
 import hextechlibrary.games.tft.dto.match.ParticipantTFT;
 import hextechlibrary.games.tft.sets.five.patch1115.Champion;
 import hextechlibrary.games.tft.sets.five.patch1115.Trait;
-import hextechlibrary.api.RAPIManager;
 
 import java.io.*;
 
@@ -26,12 +26,13 @@ public class Main {
     //I only have a LoL API Key so these two will used the Development key
     //LoR code isn't actually implemented yet at all
     private static final String lor = "LoR_KEY";
-    private static final String tft = "RGAPI-76597c59-60b9-4fac-8afd-4fd2122e94dc";
+    private static final String tft = "RGAPI-31fb5009-814c-40a5-9cb2-3fa0d3b48608";
 
     private static final HextechLibrary hextechLibrary = new HextechLibrary(lol,lor,tft);
-    private static final RAPIManager rapiManager = hextechLibrary.getRapiManager();
+    private static final  TfTAPI tftAPI = hextechLibrary.getRapiManager().getTfTAPI();
 
     public static void main(String[] args){
+
         //HTL();
         //setFive();
         //rapiManager.getTFTMatchByMatchID("NA1_4133729909")
@@ -120,7 +121,7 @@ public class Main {
             if (!username.equals("")){
                 System.out.println("Queuering Riot API for: [" + username + "]'s summoner info.");
                 try {
-                    summonerTFTS.add(rapiManager.getSummonerTFTByName(username));
+                    summonerTFTS.add(tftAPI.getSummonerByName(username));
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
@@ -132,8 +133,8 @@ public class Main {
 
         try {
             String puuid = summonerTFTS.get(0).getPuuid();
-            String matchID = rapiManager.getTFTMatchesByPUUID(puuid,1).get(0);
-            MatchTFT matchTFT = rapiManager.getTFTMatchByMatchID(matchID);
+            String matchID = tftAPI.getMatchesByPUUID(puuid,1).get(0);
+            MatchTFT matchTFT = tftAPI.getMatchByMatchID(matchID);
             appendMatchInfo(matchTFT);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -190,7 +191,7 @@ public class Main {
         for (ParticipantTFT participantTFT:matchTFT.getInfo().getParticipants()) {
             SummonerTFT summonerTFT = null;
             try {
-                summonerTFT = rapiManager.getSummonerTFTByPUUID(participantTFT.getPuuid());
+                summonerTFT = tftAPI.getSummonerByPUUID(participantTFT.getPuuid());
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }
