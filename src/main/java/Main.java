@@ -1,8 +1,10 @@
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import hextechlibrary.HextechLibrary;
+import hextechlibrary.api.RAPIManager;
 import hextechlibrary.api.TfTAPI;
 import hextechlibrary.games.TFTManager;
+import hextechlibrary.games.leagueoflegends.dto.match.Match;
 import hextechlibrary.games.tft.TFTSet;
 import hextechlibrary.games.tft.dto.SummonerTFT;
 import hextechlibrary.games.tft.dto.match.MatchTFT;
@@ -17,6 +19,10 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileSystemView;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.List;
 
@@ -32,63 +38,38 @@ public class Main {
     private static final  TfTAPI tftAPI = hextechLibrary.getRapiManager().getTfTAPI();
 
     public static void main(String[] args){
-
+        //tmp();
         //HTL();
-        //setFive();
-        //rapiManager.getTFTMatchByMatchID("NA1_4133729909")
 
-        /*
-        You can give it 8 or fewer players
-        It will check the first username in the summoner array for the match ID.
-        I didn't include any intensive checks since that would be way out of scope.
+        RAPIManager rapiManager = hextechLibrary.getRapiManager();
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime notToday = today.minusDays(10);
 
-        Once it is done just check your documents' folder, and it will output the Excel file there.
+        List<Match> matchIDs = new ArrayList<>();
 
-        Players MUST have only one unit on the board BEFORE they surrender/leave the match.
-        The riot api for TFT is still a WIP, so It's impossible to really check what was the last unit gotten or other specifics in that area.
-        So having one unit on the field makes this easier.
-        [i.e I only coded this to check a single unit cause the riot API is really lacking]
+        try {
+            List<String> tmpList = rapiManager
+                    .getLoLAPI()
+                    .getMatchesByPUUID(
+                            "OOYMjHMykymUP4Cag57ph-_JZ_rKDM7WZwRgc_dpazJpBv45Z45be9CB1PvxIgC2_Y1mvLe-zrcFhw",
+                            today.toString(),
+                            notToday.toString(),
+                            "400",
+                            "normal",
+                            "0",
+                            "20"
+            );
 
-        Notes:
-        - The Excel file will be named: TFTTourny.xlsx
-        - The code will skip "" in the summoner array but you still need to have the 8 spots filled.
-        So you could do something like {"","","","JackWildBurn","","","MrMythik",""}
-        and this would still work
-        -This code will only pull the last match played & finished so if the reference player starts a new match it shouldn't pull that
-        since this code and the TFT API can't look at active matches, only finished ones.
-        So running this after a match ends should work just fine
-        -Since this stores the player info if something breaks we can at least use their player info to find the match info later if needed.
-         */
+            for (String id:tmpList) {
+               matchIDs.add(rapiManager.getLoLAPI().getMatchByMatchID(id));
+               System.out.println(matchIDs.get(0).getMetadata().getParticipants());
+            }
 
-        /*
-        Monstrata
-        Thylako
-        I PlayOnceAWeek
-        Camelot
-        My Left Thumb
-        neoprotector
-        Strategies
-        doviFuneral
-        Esther
-        Dunkmaster69
-        Just Dave 26
-        Zavex
-        SoulCry
-        Best Sett World
-        Eunovation
-        morimosss
-        Hailong
-        Zanazerge
-        Qwerty10x
-        DarthLargeLoad
-        Camelot
-         */
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
 
-        //You can run this now to test it out with just my Username as an input
-        //Since its the first real username in the array it will be the Refrence Usernamer for pulling match info.
-        //MrMythikk won't be refrenced for match info, just his player info recorded.
-        String[] summoner = {"","JackWildBurn","","","","","MrMythikk",""};
-        tft_Tourney(summoner);
+
     }
 
     /**
@@ -506,5 +487,83 @@ public class Main {
         }
         System.out.println(string);
     }
+
+    private static void tmp(){
+        // create  instance object
+        LocalDateTime Today = LocalDateTime.now();
+        LocalDateTime previous = Today.minusDays(10);
+
+        //LocalDateTime now = LocalDateTime.now();
+        ZoneId zone = ZoneId.of("America/Chicago");
+        ZoneOffset zoneOffSet = zone.getRules().getOffset(previous);
+
+        System.out.println("Oie: " + previous.toEpochSecond(zoneOffSet));
+
+        Instant instant = Instant.now();
+        //Instant startTime = endTime.minus();
+
+        // print Instant Value
+        System.out.println("Instant: " + instant);
+        // get epochValue using getEpochSecond
+        long epochValue = instant.getEpochSecond();
+        // print results
+        System.out.println("Java epoch Value: " + epochValue);
+    }
+
+    //setFive();
+    //rapiManager.getTFTMatchByMatchID("NA1_4133729909")
+
+        /*
+        You can give it 8 or fewer players
+        It will check the first username in the summoner array for the match ID.
+        I didn't include any intensive checks since that would be way out of scope.
+
+        Once it is done just check your documents' folder, and it will output the Excel file there.
+
+        Players MUST have only one unit on the board BEFORE they surrender/leave the match.
+        The riot api for TFT is still a WIP, so It's impossible to really check what was the last unit gotten or other specifics in that area.
+        So having one unit on the field makes this easier.
+        [i.e I only coded this to check a single unit cause the riot API is really lacking]
+
+        Notes:
+        - The Excel file will be named: TFTTourny.xlsx
+        - The code will skip "" in the summoner array but you still need to have the 8 spots filled.
+        So you could do something like {"","","","JackWildBurn","","","MrMythik",""}
+        and this would still work
+        -This code will only pull the last match played & finished so if the reference player starts a new match it shouldn't pull that
+        since this code and the TFT API can't look at active matches, only finished ones.
+        So running this after a match ends should work just fine
+        -Since this stores the player info if something breaks we can at least use their player info to find the match info later if needed.
+         */
+
+        /*
+        Monstrata
+        Thylako
+        I PlayOnceAWeek
+        Camelot
+        My Left Thumb
+        neoprotector
+        Strategies
+        doviFuneral
+        Esther
+        Dunkmaster69
+        Just Dave 26
+        Zavex
+        SoulCry
+        Best Sett World
+        Eunovation
+        morimosss
+        Hailong
+        Zanazerge
+        Qwerty10x
+        DarthLargeLoad
+        Camelot
+         */
+
+    //You can run this now to test it out with just my Username as an input
+    //Since its the first real username in the array it will be the Refrence Usernamer for pulling match info.
+    //MrMythikk won't be refrenced for match info, just his player info recorded.
+    //String[] summoner = {"","JackWildBurn","","","","","MrMythikk",""};
+    //tft_Tourney(summoner);
 }
 
