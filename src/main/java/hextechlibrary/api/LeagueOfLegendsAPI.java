@@ -20,7 +20,6 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 public class LeagueOfLegendsAPI extends RiotAPI {
-    private Headers previousHeaders;
     private final Bucket apiBucket;
     private Date tmpDate;
 
