@@ -1,7 +1,26 @@
 package hextechlibrary.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import hextechlibrary.dto.tft.SummonerDto;
 
+import javax.annotation.processing.Generated;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+        "id",
+        "accountId",
+        "puuid",
+        "name",
+        "profileIconId",
+        "revisionDate",
+        "summonerLevel"
+})
+
+@Generated("jsonschema2pojo")
+@JsonDeserialize(builder = SummonerDto.Builder.class)
 public abstract class Summoner {
     @JsonProperty("id")
     protected String id;
@@ -16,7 +35,7 @@ public abstract class Summoner {
     @JsonProperty("revisionDate")
     protected long revisionDate;
     @JsonProperty("summonerLevel")
-    protected int summonerLevel;
+    protected long summonerLevel;
 
     public String getId() {
         return id;
@@ -42,7 +61,7 @@ public abstract class Summoner {
         return revisionDate;
     }
 
-    public int getSummonerLevel() {
+    public long getSummonerLevel() {
         return summonerLevel;
     }
 }

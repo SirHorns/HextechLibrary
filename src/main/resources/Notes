@@ -1,0 +1,23 @@
+https://www.google.com/search?q=Java+output+to+exel+file&rlz=1C1GCEA_enUS955US964&oq=Java+output+to+exel+file&aqs=chrome..69i57j0i13j0i22i30l8.4256j0j7&sourceid=chrome&ie=UTF-8
+https://www.baeldung.com/java-microsoft-excel
+https://www.geeksforgeeks.org/how-to-write-itemsData-into-excel-sheet-using-java/
+https://www.tutorialspoint.com/javaexamples/write_data_into_excel_sheet.htm
+https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml/5.1.0
+
+    // Platform Routing Values
+    private final String br1 = "https://br1.api.riotgames.com";
+    private final String eun1 = "https://eun1.api.riotgames.com";
+    private final String euw1 = "https://euw1.api.riotgames.com";
+    private final String jp1 = "https://jp1.api.riotgames.com";
+    private final String kr = "https://kr.api.riotgames.com";
+    private final String la1 = "https://la1.api.riotgames.com";
+    private final String la2 = "https://la2.api.riotgames.com";
+    private final String na1 = "https://na1.api.riotgames.com";
+    private final String oc1 = "https://oc1.api.riotgames.com";
+    private final String tr1 = "https://tr1.api.riotgames.com";
+    private final String ru = "https://ru.api.riotgames.com";
+
+    // Regional Routing Values
+    private final String americas = "https://americas.api.riotgames.com";
+    private final String asia = "https://asia.api.riotgames.com";
+    private final String europe = "https://europe.api.riotgames.com";

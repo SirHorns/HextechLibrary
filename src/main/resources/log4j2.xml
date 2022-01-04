@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+<Appenders>
+    # Console appender
+    <Console name="LogToConsole" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+    </Console>
+
+</Appenders>
+
+<Loggers>
+    # Override log level for specified package
+    <Logger name="com.hextechlibrary" level="TRACE">
+        <AppenderRef ref="LogToConsole"/>
+    </Logger>
+
+    <root level="INFO">
+        <appender-ref ref="LogToConsole" />
+    </root>
+</Loggers>
+
+</Configuration>
