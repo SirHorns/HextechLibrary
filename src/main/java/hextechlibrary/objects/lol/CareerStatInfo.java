@@ -1,6 +1,8 @@
 package hextechlibrary.objects.lol;
 
 import hextechlibrary.dto.lol.SummonerDto;
+import hextechlibrary.dto.lol.match.MatchDto;
+import hextechlibrary.dto.lol.match.ParticipantDto;
 
 import java.util.List;
 
@@ -10,12 +12,13 @@ public class CareerStatInfo {
     private SummonerDto summoner;
 
     private List<String> matchIDList;
+    private List<MatchDto> matchInfoList;
+    private List<ParticipantDto> playerMatchInfoList;
     private List<String> championList;
     private List<ChampPick> championPickInfoList;
     List<ChampPick> mostPlayedList;
     List<ChampPick> highestKDAList;
     List<ChampPick> lowestKDAList;
-
 
     private int gameCount;
     private int playerWins;
@@ -29,6 +32,21 @@ public class CareerStatInfo {
         this.summonerName = summonerName;
     }
 
+    public List<ParticipantDto> getPlayerMatchInfoList() {
+        return playerMatchInfoList;
+    }
+
+    public void setPlayerMatchInfoList(List<ParticipantDto> playerMatchInfoList) {
+        this.playerMatchInfoList = playerMatchInfoList;
+    }
+
+    public List<MatchDto> getMatchInfoList() {
+        return matchInfoList;
+    }
+
+    public void setMatchInfoList(List<MatchDto> matchInfoList) {
+        this.matchInfoList = matchInfoList;
+    }
 
     /**
      *
@@ -289,22 +307,51 @@ public class CareerStatInfo {
 
     public static class ChampPick{
         String name;
-        int pickCount;
+        int pickCount = 0;
 
         //TODO: Implement K/D/A & KDR recording within CareerStats Calculations.
-        int kills;
-        int deaths;
-        int assists;
+        int kills = 0;
+        int deaths = 0;
+        int assists = 0;
 
-        int wins;
-        int loses;
-        double winRate;
+        int wins = 0;
+        int loses = 0;
 
-        double killDeathAssistRatio;
-        double killDeathRatio;
+        double winRate = 0;
+        double pickRate = 0;
+
+        double killDeathAssistRatio = 0;
+        double killDeathRatio = 0;
+        double dominanceFactor = 0;
+        double dominanceRatio = 0;
+
         double pickRatio;
 
         public ChampPick() {
+        }
+
+        public double getPickRate() {
+            return pickRate;
+        }
+
+        public void setPickRate(double pickRate) {
+            this.pickRate = pickRate;
+        }
+
+        public double getDominanceFactor() {
+            return dominanceFactor;
+        }
+
+        public void setDominanceFactor(double dominanceFactor) {
+            this.dominanceFactor = dominanceFactor;
+        }
+
+        public double getDominanceRatio() {
+            return dominanceRatio;
+        }
+
+        public void setDominanceRatio(double dominanceRatio) {
+            this.dominanceRatio = dominanceRatio;
         }
 
         public String getName() {

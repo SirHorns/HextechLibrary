@@ -1,19 +1,13 @@
 package hextechlibrary;
-
-import java.sql.Time;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-
 /**
  * Created by Siddharth on 2/19/18.
  * This class is implemented based on Token bucket algorithm
  */
-public class RateLimiter {
+public class LeakyBucket {
 
     private final long capacity;
-    private long windowTimeInSeconds;
+
+    //private long windowTimeInSeconds;
 
     long lastRefillTimeStamp;
 
@@ -21,16 +15,18 @@ public class RateLimiter {
 
     long availableTokens;
 
-    public RateLimiter(long capacity, long windowTimeInSeconds){
+    public LeakyBucket(long capacity, long windowTimeInSeconds){
         this.capacity = capacity;
-        this.windowTimeInSeconds = windowTimeInSeconds;
+        //this.windowTimeInSeconds = windowTimeInSeconds;
         lastRefillTimeStamp = System.currentTimeMillis();
         refillCountPerSecond = capacity / windowTimeInSeconds;
         availableTokens = 0;
     }
+
     public long getAvailableTokens(){
         return this.availableTokens;
     }
+
     public boolean tryConsume(){
         refill();
 

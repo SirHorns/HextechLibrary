@@ -1,5 +1,6 @@
 package hextechlibrary.callables;
 
+import hextechlibrary.LeakyBucket;
 import hextechlibrary.api.LeagueOfLegendsAPI;
 import hextechlibrary.dto.lol.SummonerDto;
 import hextechlibrary.dto.lol.match.MatchDto;
@@ -22,9 +23,13 @@ public class CareerStats implements Callable<CareerStatInfo> {
     private Thread t;
     private final String threadName;
     private final LeagueOfLegendsAPI api;
-    private final int tmpGamesToPull;
-    String summonerName;
+    private final int numberGamesToPull;
+    private final String summonerName;
+    private final CareerStatInfo playerStats;
     private final Logger logger = LogManager.getLogger(this.getClass().getName());
+    private final LeakyBucket leakyBucket =  new LeakyBucket(20,1);
+    private final int queueID;
+
 
     /**
      *
@@ -32,11 +37,13 @@ public class CareerStats implements Callable<CareerStatInfo> {
      * @param summonerName The name of the Summoner to be looked up.
      * @param numOfGames The number of days to look back on for match info.
      */
-    public CareerStats(LeagueOfLegendsAPI api, String summonerName,int numOfGames) {
+    public CareerStats(LeagueOfLegendsAPI api, String queue,String summonerName,int numOfGames) {
         this.api = api;
         this.summonerName = summonerName;
-        this.tmpGamesToPull = numOfGames;
+        this.playerStats = new CareerStatInfo(summonerName);
+        this.numberGamesToPull = numOfGames;
         this.threadName = summonerName + "-CareerStats";
+        this.queueID = HandleQueueID(queue);
     }
 
     public void start () {
@@ -47,103 +54,167 @@ public class CareerStats implements Callable<CareerStatInfo> {
         }
     }
 
-    @Override
-    public CareerStatInfo call() throws Exception {
-
-        logger.info("Running Thread: [" +  threadName + "]");
-
-        CareerStatInfo playerStats = new CareerStatInfo(summonerName);
-        SummonerDto summoner = api.getSummonerByName(summonerName);
-        String puuid = summoner.getPuuid();
-
+    LocalDateTime endTime;
+    LocalDateTime startTime;
+    int queryPeriod;
+    ZoneOffset zoneOffSet;
+    private void HandleTimeInfo() {
         //GETTING EPOCH TIME PERIOD INFO
         //startTime is in the past while endTime is close to the present.
-        LocalDateTime endTime = LocalDateTime.now();
-        int queryPeriod = 30;
-        LocalDateTime startTime = endTime.minusDays(queryPeriod);
+        endTime = LocalDateTime.now();
+        queryPeriod = 30;
+        startTime = endTime.minusDays(queryPeriod);
         ZoneId zone = ZoneId.of("America/Chicago");
-        ZoneOffset zoneOffSet = zone.getRules().getOffset(startTime);
+        zoneOffSet = zone.getRules().getOffset(startTime);
+    }
 
-        //This code requests 100 matchIDs from the League API
-        List<String> matchIDs = api.getMatchesByPUUID(puuid, startTime.toEpochSecond(zoneOffSet), endTime.toEpochSecond(zoneOffSet), 400, "normal", 0, tmpGamesToPull);
-        List<MatchDto> matchList = new ArrayList<>();
-        for (String id : matchIDs) {
-            matchList.add(api.getMatchByMatchID(id));
-        }
-        //Storing matchIDS and match count in CareerStatsInfo object
-        playerStats.setMatchIDList(matchIDs);
+    SummonerDto playerInfo;
+    private void HandleMatchIDs() {
+        apiMatchIDs();
+        List<MatchDto> matchList= apiMatchInfo();
 
         //Parsing through the matchID list to find the Participant of the player and storing that in a List for later use.
         List<ParticipantDto> playerMatchInfoList = new ArrayList<>();
         for (MatchDto match : matchList) {
             if (match != null) {
-                for (ParticipantDto part : match.getInfo().getParticipants()) {
-                    if (puuid.equals(part.getPuuid())) {
-                        playerMatchInfoList.add(part);
+                for (ParticipantDto participant : match.getInfo().getParticipants()) {
+                    if (playerInfo.getPuuid().equals(participant.getPuuid())) {
+                        playerMatchInfoList.add(participant);
                     }
                 }
             }
         }
 
-        //Total Career K/D/A count
-        int totalKills = 0;
-        int totalDeaths = 0;
-        int totalAssists = 0;
+        playerStats.setPlayerMatchInfoList(playerMatchInfoList);
+    }
+    private List<String> apiMatchIDs(){
+        List<String> apiMatchIDs = new ArrayList<>();
+        int requests = 1;
+        //This code requests 100 matchIDs from the League API
+        while(requests == 1){
+            if(leakyBucket.tryConsume())
+            {
+                apiMatchIDs = api.getMatchesByPUUID(
+                        playerInfo.getPuuid(),
+                        startTime.toEpochSecond(zoneOffSet),
+                        endTime.toEpochSecond(zoneOffSet), queueID, "", 0, numberGamesToPull);
 
-        //Hash Maps for storing ChampPick K/D/A info
-        Map<String, Integer> champWins = new HashMap<>();
-        Map<String, Integer> champLoses = new HashMap<>();
-        Map<String, Double> champKDA = new HashMap<>();
+                playerStats.setMatchIDList(apiMatchIDs);
+                requests--;
+            }
+        }
+        return apiMatchIDs;
+    }
+    private List<MatchDto> apiMatchInfo(){
+        int requests;
+        //Queery API for Match INFO
+        List<MatchDto> matchList = new ArrayList<>();
+        for (String id : playerStats.getMatchIDList()) {
+            requests = 1;
+            while(requests == 1){
+                if(leakyBucket.tryConsume())
+                {
+                    matchList.add(api.getMatchByMatchID(id));
+                    requests--;
+                }
+            }
+        }
+        playerStats.setMatchInfoList(matchList);
+        return matchList;
+    }
 
+    //Hash Maps for storing ChampPick K/D/A info
+    Map<String, Integer> champWins = new HashMap<>();
+    Map<String, Integer> champLoses = new HashMap<>();
+    Map<String, Double> champKDA = new HashMap<>();
+    Map<String,CareerStatInfo.ChampPick> mapChampPick = new HashMap<>();
+    List<CareerStatInfo.ChampPick> championPickList = new ArrayList<>();
+
+    //sets Champion Pick Info.
+    private void HandleMatchInfo() {
         //Get Champs & Wins/loses
-        List<String> championNameList = new ArrayList<>();
-        for (ParticipantDto player:playerMatchInfoList) {
-            championNameList.add(player.getChampionName());
+        List<String> championNames = new ArrayList<>();
+        for (ParticipantDto player:playerStats.getPlayerMatchInfoList()) {
+            CareerStatInfo.ChampPick temporaryChampionPick = new CareerStatInfo.ChampPick();
+            String championName = player.getChampionName();
+            temporaryChampionPick.setName(championName);
+            boolean newEntry;
 
-            String champName = player.getChampionName();
-            Integer num;
-
-            //set win/lose info
-            //Makes sure to put a 0 entry for a champ in the other list[Win/Lose]
-            // if the player has never won or lose with the champ.
-            if(player.getWin()) {
-                num = champWins.get(champName);
-                champWins.put(player.getChampionName(),(num == null) ? 1 : num + 1);
-                champLoses.putIfAbsent(player.getChampionName(), 0);
+            if (mapChampPick.containsKey(championName)){
+                temporaryChampionPick = mapChampPick.get(championName);
+                temporaryChampionPick.setPickCount(temporaryChampionPick.getPickCount() + 1);
+                newEntry = false;
             }else{
-                num = champLoses.get(champName);
-                champLoses.put(player.getChampionName(),(num == null) ? 1 : num + 1);
-                champWins.putIfAbsent(player.getChampionName(), 0);
+                championNames.add(championName);
+                temporaryChampionPick.setPickCount(1);
+                newEntry = true;
             }
 
+            // if the player has never won or lose with the champ.
+            if(player.getWin()) {
+                temporaryChampionPick.setWins(temporaryChampionPick.getWins() + 1);
+                playerStats.setPlayerWins(playerStats.getPlayerWins() + 1);
+            }else{
+                temporaryChampionPick.setLoses(temporaryChampionPick.getLoses() + 1);
+                playerStats.setPlayerLoses(playerStats.getPlayerLoses() + 1);
+            }
+
+            temporaryChampionPick.setPickRate(calculatePickRate(temporaryChampionPick.getPickCount(),numberGamesToPull));
+            temporaryChampionPick.setKills(temporaryChampionPick.getKills() + player.getKills());
+            temporaryChampionPick.setDeaths(temporaryChampionPick.getDeaths() + player.getDeaths());
+            temporaryChampionPick.setAssists(temporaryChampionPick.getAssists() + player.getAssists());
+
             //Increment player total scoring
-            totalKills += player.getKills();
-            totalDeaths += player.getDeaths();
-            totalAssists += player.getAssists();
+            playerStats.setTotalKills(playerStats.getTotalKills() + player.getKills());
+            playerStats.setTotalDeaths(playerStats.getTotalDeaths() + player.getDeaths());
+            playerStats.setTotalAssists(playerStats.getTotalAssists() + player.getAssists());
 
             //Calculate match Champ KDA.
-            double kda = calculateKDA(player.getKills(),player.getDeaths(),player.getAssists());
-            double newKda;
-            champKDA.putIfAbsent(player.getChampionName(),kda);
-            if (champKDA.get(player.getChampionName()) != null){
-                newKda = kda + champKDA.get(player.getChampionName());
-                champKDA.replace(player.getChampionName(),champKDA.get(player.getChampionName()),newKda);
+
+            if(newEntry){
+                mapChampPick.put(championName, temporaryChampionPick);
+            }
+            else{
+                mapChampPick.replace(championName, temporaryChampionPick);
             }
         }
 
-        //Setting TotalScores
-        playerStats.setTotalKills(totalKills);
-        playerStats.setTotalDeaths(totalDeaths);
-        playerStats.setTotalAssists(totalAssists);
+        for (String champion: championNames) {
+            CareerStatInfo.ChampPick pick = HandleCalculateRatios(mapChampPick.get(champion));
+            championPickList.add(pick);
+            mapChampPick.replace(champion, pick);
+        }
 
-        //PARSING THOUGH THE TOP FIVE CHAMP LIST
-        List<String> topFivePicks = new ArrayList<>(5);
-        List<Integer> topFivePickCounts = new ArrayList<>(5);
-        List<Double> topFivePickRates = new ArrayList<>(5);
-        List<Double> topFiveWinRates = new ArrayList<>(5);
 
-        Map<String, Long> group = championNameList.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        playerStats.setChampionPickInfoList(championPickList);
+        playerStats.setChampionList(championNames);
+    }
+    CareerStatInfo.ChampPick HandleCalculateRatios(CareerStatInfo.ChampPick pick){
+        double wr = calculateWinRate(pick.getWins(), pick.getLoses());
+        double kda = calculateKDA(pick.getKills(),pick.getDeaths(),pick.getAssists());
+        double kdr = calculateKDR(pick.getKills(),pick.getDeaths());
+        double df = calculateDF(pick.getKills(),pick.getDeaths(),pick.getAssists());
+        double dr = calculateDR(pick.getKills(),pick.getDeaths(),pick.getAssists());
 
+        pick.setWinRate(wr);
+        pick.setKillDeathAssistRatio(kda);
+        pick.setKillDeathRatio(kdr);
+        pick.setDominanceFactor(df);
+        pick.setDominanceRatio(dr);
+
+        return pick;
+    }
+
+    //PARSING THOUGH THE TOP FIVE CHAMP LIST
+    List<String> topFivePicks = new ArrayList<>(5);
+    List<Integer> topFivePickCounts = new ArrayList<>(5);
+    List<Double> topFivePickRates = new ArrayList<>(5);
+    List<Double> topFiveWinRates = new ArrayList<>(5);
+    private void HandleTopFive() {
+        Map<String, Long> group = new HashMap<>();
+        for (CareerStatInfo.ChampPick pick: playerStats.getChampionPickInfoList()) {
+            group.put(pick.getName(), (long) pick.getPickCount());
+        }
         //Getting Top Five Champion pick Info
         group.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
@@ -154,72 +225,18 @@ public class CareerStats implements Callable<CareerStatInfo> {
                     topFivePicks.add(champ);
                     topFivePickCounts.add(entry.getValue().intValue());
 
-                    //Pick Rate
-                    double pr = calculatePickRate(entry.getValue().intValue(), championNameList.size());
-                    topFivePickRates.add(pr);
+                    topFivePickRates.add(mapChampPick.get(entry.getKey()).getPickRate());
 
                     //Win Rate
-                    int wins;
-                    int loses;
-                    if (champWins.get(champ) != null){
-                        wins = champWins.get(champ);
-                    }else{
-                        wins = 0;
-                    }
-                    if (champLoses.get(champ) != null){
-                        loses = champLoses.get(champ);
-                    }else{
-                        loses = 0;
-                    }
+                    int wins = mapChampPick.get(entry.getKey()).getWins();
+                    int loses = mapChampPick.get(entry.getKey()).getLoses();
 
-                    double wr =  calculateWinRate(wins,loses);
-                    topFiveWinRates.add(wr);
+                    double winRate =  calculateWinRate(wins,loses);
+                    topFiveWinRates.add(winRate);
                 });
+    }
 
-        //Getting All Champion pick Info
-        int champPoolSize = championNameList.size();
-        championNameList.clear(); //Clearing so it can be filled with a list of only champion names occurring once.
-        List<CareerStatInfo.ChampPick> champList = new ArrayList<>();
-        group.entrySet().stream()
-                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .forEach(entry ->{
-                    //Pick Rate
-                    double pr = calculatePickRate(entry.getValue().intValue(), champPoolSize);
-                    pr = Precision.round(pr, 1);
-
-                    //Win Rate
-                    int wins;
-                    int loses;
-                    if (champWins.get(entry.getKey()) != null){
-                        wins = champWins.get(entry.getKey());
-                    }else{
-                        wins = 0;
-                    }
-                    if (champLoses.get(entry.getKey()) != null){
-                        loses = champLoses.get(entry.getKey());
-                    }else{
-                        loses = 0;
-                    }
-
-                    double wr = calculateWinRate(wins,loses);
-                    wr = Precision.round(wr,1);
-
-                    //Setting Info
-                    CareerStatInfo.ChampPick champPick = new CareerStatInfo.ChampPick();
-                    champPick.setName(entry.getKey());
-                    champPick.setPickCount(entry.getValue().intValue());
-                    champPick.setPickRatio(pr);
-                    champPick.setWinRate(wr);
-                    champPick.setWins(champWins.get(entry.getKey()));
-                    champPick.setLoses(champLoses.get(entry.getKey()));
-                    champPick.setKillDeathAssistRatio(Precision.round(champKDA.get(entry.getKey()),1));
-                    champList.add(champPick);
-                    championNameList.add(entry.getKey());
-
-                });
-        playerStats.setChampionPickInfoList(champList);
-        playerStats.setChampionList(championNameList);
-
+    private void SetTopFiveChamps(){
         //SETTING TOP FIVE CHAMPS
         int index = 0;
         List<CareerStatInfo.ChampPick> topFiveChampList = new ArrayList<>();
@@ -235,8 +252,54 @@ public class CareerStats implements Callable<CareerStatInfo> {
             index++;
         }
         playerStats.setMostPlayedList(topFiveChampList);
+    }
 
+    private void HandleWLPRates(Map<String, Long> group){
+        //Handling Champ Win/Lose/Pick info
+        List<String> championNameList = new ArrayList<>();
+        List<CareerStatInfo.ChampPick> champList = new ArrayList<>();
+        group.entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
+                .forEach(entry ->{
+                    //Pick Rate
+                    double pickRate = calculatePickRate(entry.getValue().intValue(), playerStats.getChampionList().size());
+                    pickRate = Precision.round(pickRate, 1);
 
+                    //Win Rate
+                    int wins;
+                    int loses;
+                    if (champWins.get(entry.getKey()) != null){
+                        wins = champWins.get(entry.getKey());
+                    }else{
+                        wins = 0;
+                    }
+                    if (champLoses.get(entry.getKey()) != null){
+                        loses = champLoses.get(entry.getKey());
+                    }else{
+                        loses = 0;
+                    }
+
+                    double winRate = calculateWinRate(wins,loses);
+                    winRate = Precision.round(winRate,1);
+
+                    //Setting Info
+                    CareerStatInfo.ChampPick champPick = new CareerStatInfo.ChampPick();
+                    champPick.setName(entry.getKey());
+                    champPick.setPickCount(entry.getValue().intValue());
+                    champPick.setPickRatio(pickRate);
+                    champPick.setWinRate(winRate);
+                    champPick.setWins(champWins.get(entry.getKey()));
+                    champPick.setLoses(champLoses.get(entry.getKey()));
+                    champPick.setKillDeathAssistRatio(Precision.round(champKDA.get(entry.getKey()),1));
+                    champList.add(champPick);
+                    championNameList.add(entry.getKey());
+                });
+
+        playerStats.setChampionPickInfoList(champList);
+        playerStats.setChampionList(championNameList);
+    }
+
+    private void HandleChampsKDA(){
         //Setting the Highest & Lowest KDA Champs
         List<CareerStatInfo.ChampPick> highestKDAList = new ArrayList<>();
         List<CareerStatInfo.ChampPick> lowestKDAList = new ArrayList<>();
@@ -252,7 +315,7 @@ public class CareerStats implements Callable<CareerStatInfo> {
                 .sorted(Map.Entry.<String, Double>comparingByValue().reversed())
                 .limit(5) // here you can use a variable for the number of the top object you want
                 .forEach(entry ->{
-                    for (CareerStatInfo.ChampPick pick:champList) {
+                    for (CareerStatInfo.ChampPick pick:playerStats.getChampionPickInfoList()) {
                         if(pick.getName().equals(entry.getKey())){
                             highestKDAList.add(pick);
                         }
@@ -266,13 +329,43 @@ public class CareerStats implements Callable<CareerStatInfo> {
                 .sorted(Map.Entry.<String, Double>comparingByValue().reversed().reversed())
                 .limit(5) // here you can use a variable for the number of the top object you want
                 .forEach(entry ->{
-                    for (CareerStatInfo.ChampPick pick:champList) {
+                    for (CareerStatInfo.ChampPick pick:playerStats.getChampionPickInfoList()) {
                         if(pick.getName().equals(entry.getKey())){
                             lowestKDAList.add(pick);
                         }
                     }
                 });
         playerStats.setLowestKDAList(lowestKDAList);
+    }
+
+    @Override
+    public CareerStatInfo call() throws Exception {
+        logger.info("Running Thread: [" +  threadName + "]");
+
+        int requests = 1;
+        while(requests == 1){
+            if(leakyBucket.tryConsume())
+            {
+                playerInfo = api.getSummonerByName(summonerName);
+                requests--;
+            }
+        }
+
+        HandleTimeInfo();
+        HandleMatchIDs();
+        HandleMatchInfo();
+        Map<String, Long> group =
+                playerStats.getChampionList().stream()
+                        .collect(
+                                Collectors.groupingBy(
+                                        Function.identity(),
+                                        Collectors.counting()
+                                )
+                        );
+        HandleTopFive();
+        //HandleWLPRates(group);
+        //SetTopFiveChamps();
+        //HandleChampsKDA();
 
         /*
         Things to figure out how to add:
@@ -312,5 +405,25 @@ public class CareerStats implements Callable<CareerStatInfo> {
         double dr = ((2 * kills) + assists) / (2 * deaths);
         //Precision.round(dr,1);
         return dr;
+    }
+
+    private int HandleQueueID(String id){
+        id = id.toLowerCase(Locale.ROOT);
+        int qID = 0;
+
+        switch (id) {
+            case "aram" -> qID = 100;
+            case "draft" -> qID = 400;
+            case "solo" -> qID = 420;
+            case "blind" -> qID = 430;
+            case "flex" -> qID = 440;
+            case "clash" -> qID = 700;
+            case "arurf" -> qID = 900;
+            case "urf" -> qID = 1900;
+            default -> {
+                qID = 400;
+            }
+        }
+        return qID;
     }
 }

@@ -89,7 +89,7 @@ public class HextechLibrary{
 
     public void getCareerStats(String summonerName) {
         FutureTask[] randomNumberTasks = new FutureTask[1];
-        CareerStats careerStats = new CareerStats(riotAPIManager.getLeagueOfLegendsAPI(), summonerName,100);
+        CareerStats careerStats = new CareerStats(riotAPIManager.getLeagueOfLegendsAPI(), "",summonerName,100);
         randomNumberTasks[0] = new FutureTask(careerStats);
         Thread t = new Thread(randomNumberTasks[0],summonerName + "-CareerStats");
         t.start();

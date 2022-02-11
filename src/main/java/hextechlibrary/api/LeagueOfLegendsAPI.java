@@ -287,7 +287,6 @@ public class LeagueOfLegendsAPI extends RiotAPI {
             return null;
         }
 
-
         Request request = new Request.Builder()
                 .header("Accept-Language","en-US,en;q=0.9")
                 .header("Accept-Charset","application/x-www-form-urlencoded; charset=UTF-8")

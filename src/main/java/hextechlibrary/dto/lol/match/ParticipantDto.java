@@ -1,5 +1,6 @@
 package hextechlibrary.dto.lol.match;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import hextechlibrary.dto.lol.match.perks.PerksDto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -128,6 +129,7 @@ public class ParticipantDto {
     }
 
     @JsonPOJOBuilder
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Builder{
         private int assists,baronKills,bountyLevel,champExperience,champLevel,championId,championTransform,consumablesPurchased,damageDealtToBuildings,damageDealtToObjectives,damageDealtToTurrets
                 ,damageSelfMitigated,deaths,detectorWardsPlaced,doubleKills,dragonKills,goldEarned,goldSpent,inhibitorKills,inhibitorTakedowns,inhibitorsLost

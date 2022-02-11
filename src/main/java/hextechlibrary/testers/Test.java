@@ -6,6 +6,7 @@ import hextechlibrary.okhttp.LoggingInterceptor;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Refill;
+import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -26,7 +27,7 @@ public class Test {
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
-            .addInterceptor(new LoggingInterceptor())
+            //.addInterceptor(new LoggingInterceptor())
             .build();
 
     public static void main(String[] args) {
@@ -38,7 +39,8 @@ public class Test {
                 .addLimit(limit1)
                 .addLimit(limit2)
                 .build();
-        getSummonerDtoByName("JackWildburn");
+
+        getSummonerDtoByName("JackWiburn");
     }
 
     private static SummonerDto getSummonerDtoByName(String name) {
@@ -74,89 +76,117 @@ public class Test {
     private static Response PreformRequest(boolean bucketBool, Request request) {
         Response response = null;
         boolean loopFlag = true;
-        if (bucketBool){
-            loopFlag = false;
-        }
 
         do{
-            try {
-                response = okHttpClient.newCall(request).execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            if (response.isSuccessful()){
-                String code = String.valueOf(response.code());
-
-                if (code.matches("2\\d\\d")){
-
-                }
-                switch (code) {
-                    case "200" -> {
-                        logger.info("Response Code: " + code);
-                    }
+            if (bucketBool){
+                try {
+                    response = okHttpClient.newCall(request).execute();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
 
-                logger.info("Response Success");
-                loopFlag = false;
-            }else {
-                String code = "xxx";
-
-                if (response.code() >= 100 || response.code() <= 199 ){
-                    code = "1xx";
-                }
-                if (response.code() >= 200 || response.code() <= 299 ){
-                    code = "2xx";
-                }
-                if (response.code() >= 300 || response.code() <= 399 ){
-                    code = "3xx";
-                }
-                if (response.code() >= 400 || response.code() <= 499 ){
-                    code = "4xx";
-                }
-                if (response.code() >= 500 || response.code() <= 599 ){
-                    code = "5xx";
-                }
-
-                switch (code) {
-                    case "1xx" -> {
-                        logger.info("Response Failure: - " + response.code() + " " + response.message());
-                        loopFlag = false;
-                        response = null;
-                    }
-                    case "2xx" -> {
-                        logger.warn("Response Failure:\n" + response);
-                        loopFlag = true;
-                        try {
-                            Thread.sleep(2000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    case "3xx" -> {
-                        logger.warn("Response 3xx:\n" + response.code());
-                    }
-                    case "4xx" -> {
-                        logger.warn("Response 4xx:\n" + response.code());
-                    }
-                    case "5xx" -> {
-                        logger.warn("Response 5xx:\n" + response.code());
-                    }
-                    case "xxx" -> {
-                        logger.warn("Response :\n Something went wrong." + response.code());
-                    }
-                    default -> {
-                        logger.warn("Response Default:");
-                    }
+                if (response.isSuccessful()){
+                    CheckResponse(response);
+                    loopFlag = false;
+                }else {
+                    CheckResponse(response);
                 }
             }
-
         }while(loopFlag);
 
         return response;
     }
 
-    private static void CheckResponseHeaders(){
+    private static void CheckResponse(Response response){
+        String code = "xxx";
 
+        if (response.code()>= 100 && response.code() <= 199 ){
+            code = "1xx";
+        }
+        if (response.code() >= 200 && response.code() <= 299 ){
+            code = "2xx";
+        }
+        if (response.code() >= 300 && response.code() <= 399 ){
+            code = "3xx";
+        }
+        if (response.code() >= 400 && response.code() <= 499 ){
+            code = "4xx";
+        }
+        if (response.code() >= 500 && response.code() <= 599 ){
+            code = "5xx";
+        }
+
+        switch (code) {
+            case "1xx" -> {
+                logger.info("Response 1xx: - " + response.code() + " " +response.message());
+            }
+            case "2xx" -> {
+                logger.warn("Response 2xx: " + response.code() + " " +response.message());
+            }
+            case "3xx" -> {
+                logger.warn("Response 3xx: " + response.code() + " " +response.message());
+            }
+            case "4xx" -> {
+                logger.warn("Response 4xx: " + response.code() + " " +response.message());
+            }
+            case "5xx" -> {
+                logger.warn("Response 5xx: " + response.code() + " " +response.message());
+            }
+            case "xxx" -> {
+                logger.warn("Response: Something went wrong." + response.code() + " " +response.message());
+            }
+            default -> {
+                logger.warn("Response Default:");
+            }
+        }
+    }
+
+
+
+
+    private static void MakeRequest(){
+        int tokens = 1;
+        if(CheckBucketRateLimit(tokens)){
+            Response response = GetResponse();
+            CheckHeaders(response.headers());
+        }else{
+
+        }
+    }
+    private static Boolean CheckBucketRateLimit(int tokens){
+        boolean check;
+
+        if (apiBucket.tryConsume(tokens)){
+            check = true;
+        }else{
+            check = false;
+        }
+
+        return check;
+    }
+    private static Response GetResponse(){
+        Request request = null;
+        Response response = null;
+        try {
+            response = okHttpClient.newCall(request).execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return  response;
+    }
+    private static void CheckHeaders(Headers responseHeaders){
+        //"X-App-Rate-Limit"
+        //"X-App-Rate-Limit-Count"
+        //"X-Method-Rate-Limit"
+        //"X-Method-Rate-Limit-Count"
+
+        //Compare current headers to stored headers.
+    }
+    private static void Sleep(){
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
